@@ -1,0 +1,31 @@
+li a {
+    color: green;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    font-family: 'IBM Plex Mono', Verdana, Arial, sans-serif;
+    font-size: 20px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    width: 35em;
+    margin: 0 auto;
+}
+
+.quiet {
+    color: #DDD;
+    text-align: right;
+}
+
+input {
+    border: 1px solid black;
+    background: white;
+    padding: 10px;
+    font-size: 18px;
+    margin: 10px 0px;
+}
