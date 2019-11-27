@@ -1,28 +1,5 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Poll</title>
-    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,400i,600" rel="stylesheet">
-    <style>
-        body {
-            width: 35em;
-            margin: 0 auto;
-            font-family: 'IBM Plex Mono', Verdana, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            font-size: 20px;
-        }
-
-        .quiet {
-            color: #DDD;
-            text-align: right;
-        }
-
-    </style>
-</head>
-
-<body>
+{% extends "base.html" %}
+{% block main %}
     <h1>Poll</h1>
     {% if questions %}
     <ul>
@@ -36,6 +13,4 @@
     {% else %}
     <p>No polls available.</p>
     {% endif%}
-</body>
-
-</html>
+{% endblock %}
