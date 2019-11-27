@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+# AUTH_USER_MODEL = 'influx_tms.InfluxUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
