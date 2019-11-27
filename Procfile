@@ -1,1 +1,1 @@
-web: gunicorn influx:influx
+web: gunicorn influx.wsgi --log-file - 
