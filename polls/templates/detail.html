@@ -1,6 +1,19 @@
-
 {% extends "base.html" %}
 {% block main %}
 <h1>Question {{ question.id }}</h1>
-{{ question }}
+<p>Q: {{ question }}</p>
+
+{% if error_message %}
+<p>
+    <strong>
+        {{ error_message }}
+    </strong>
+</p>
+{% endif %}
+
+<ul>
+    {% for choice in question.choice_set.all %}
+    <li>{{ choice.choice_text }}</li>
+    {% endfor %}
+</ul>
 {% endblock %}
