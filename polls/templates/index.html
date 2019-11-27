@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block main %}
-    <h1>Poll</h1>
-    {% if questions %}
-    <ul>
-        {% for question in questions %}
-        <li>
-            <a href="{% url 'polls:detail' question.id %}">{{ question.id }}: {{ question.question_text }}</a>
-        </li>
-        {% endfor %}
+<h1>Poll</h1>
+{% if questions %}
+<ul>
+    {% for question in questions %}
+    <li>
+        <a href="{% url 'polls:detail' question.id %}">{{ question.id }}: {{ question.question_text }}</a>
+    </li>
+    {% endfor %}
 
-    </ul>
-    {% else %}
-    <p>No polls available.</p>
-    {% endif%}
+</ul>
+{% else %}
+<p>No polls available.</p>
+{% endif%}
 {% endblock %}
