@@ -1,35 +1,19 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+
 
 # Register your models here.
 
-from .models import Institution, Student, Instructor
-
-# Institution
-
-
-class InstitutionalStudentsInline(admin.TabularInline):
-    model = Student
+# from .models import Institution, Student, Instructor
+from .models import InfluxUser
+from .forms import InfluxUserCreationForm, InfluxUserUpdateForm
 
 
-class InstitutionalInstructorsInline(admin.TabularInline):
-    model = Instructor
+class InfluxUserAdmin(UserAdmin):
+    add_form = InfluxUserCreationForm
+    form = InfluxUserUpdateForm
+    model = InfluxUser
+    list_display = ['user_id', 'first_and_given_name', 'email']
 
-
-class InstitutionAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields': ['name', 'address']}),
-    ]
-    inlines = (InstitutionalInstructorsInline, InstitutionalStudentsInline)
-
-# Define a new User admin
-class UserAdmin(BaseUserAdmin):
-    inlines = (InstitutionalInstructorsInline, InstitutionalStudentsInline)
-
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
-
-admin.site.register(Institution, InstitutionAdmin)
-admin.site.register(Instructor)
-admin.site.register(Student)
+admin.site.register(InfluxUser, InfluxUserAdmin)
