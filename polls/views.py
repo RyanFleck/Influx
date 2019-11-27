@@ -19,11 +19,13 @@ class IndexView(generic.ListView):
 class DetailView(generic.DetailView):
     model = Question
     template_name = 'polls/detail.html'
+    context_object_name = 'question'
 
 
 class ResultsView(generic.DetailView):
     model = Question
     template_name = 'polls/results.html'
+    context_object_name = 'question'
 
 
 def vote(request, question_id):

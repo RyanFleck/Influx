@@ -1,3 +1,4 @@
+{% load static %}
 
 <!DOCTYPE html>
 <html>
@@ -5,28 +6,7 @@
 <head>
     <title>Poll</title>
     <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,400i,600" rel="stylesheet">
-    <style>
-        html {
-            scroll-behavior: smooth;
-            overflow-x: hidden;
-            overflow-y: scroll;
-        }
-
-        body {
-            width: 35em;
-            margin: 0 auto;
-            font-family: 'IBM Plex Mono', Verdana, Arial, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            font-size: 20px;
-        }
-
-        .quiet {
-            color: #DDD;
-            text-align: right;
-        }
-
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}">
 </head>
 
 <body>
