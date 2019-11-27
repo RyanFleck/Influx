@@ -2,6 +2,8 @@ from django.urls import path
 
 from . import views
 
+
+app_name = 'polls'
 urlpatterns = [
 
     # Change this to 'poll' after experiment is finished.
