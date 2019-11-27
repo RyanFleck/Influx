@@ -19,10 +19,9 @@ class InstitutionalInstructorsInline(admin.TabularInline):
 
 class InstitutionAdmin(admin.ModelAdmin):
     fieldsets = [
-        ('Name', {'fields': ['name']}),
-        ('Address', {'fields': ['address']}),
+        (None, {'fields': ['name', 'address']}),
     ]
-    inlines = [InstitutionalInstructorsInline, InstitutionalStudentsInline]
+    inlines = (InstitutionalInstructorsInline, InstitutionalStudentsInline)
 
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
@@ -31,3 +30,6 @@ class UserAdmin(BaseUserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
+admin.site.register(Institution, InstitutionAdmin)
+admin.site.register(Instructor)
+admin.site.register(Student)
