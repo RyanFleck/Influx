@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
 from django.views import generic
-
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import InfluxUser, Student, Instructor, Institution
@@ -20,13 +20,26 @@ class LoginView(generic.FormView):
     template_name = "tms/login.html"
     success_url = reverse_lazy('tms:landing')
 
-    def form_valid(self, form):
 
-        # Debug, print all incoming form fields:
-        y = 0
-        for x in form.cleaned_data:
-            print("{}: {} -> {}".format(y, x, form.cleaned_data[str(x)]))
-            y = y + 1
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('tms/landing')
+        return super(LoginView, self).get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        # Given user_id, user_password
+        try:
+            u = InfluxUser.objects.get(user_id=form.cleaned_data['user_id'])
+            print('User: {}'.format(u.username))
+
+            user = authenticate(username=u.username, password=form.cleaned_data['user_password'])
+
+            if (user is not None and user.is_active):
+                login(self.request, user)
+
+
+        except InfluxUser.DoesNotExist:
+            return super().form_invalid(form)
 
         return super().form_valid(form)
 
@@ -64,3 +77,10 @@ class RegistrationView(generic.FormView):
             )
 
         return super().form_valid(form)
+
+def logout(request):
+    if request.method == "POST" and request.user.is_authenticated:
+        logout(request)
+        return HttpResponseRedirect(reverse('tms:login'))
+    else:
+        return HttpResponseRedirect(request.path_info)

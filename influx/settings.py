@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
 LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/tms/landing'
+LOGOUT_REDIRECT_URL = '/'
 AUTH_USER_MODEL = 'influx_tms.InfluxUser'
 
 MIDDLEWARE = [

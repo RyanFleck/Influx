@@ -64,3 +64,14 @@ class LoginForm(forms.Form):
         label='User ID', max_length=20, initial="1234567")
     user_password = forms.CharField(
         widget=forms.PasswordInput, label='Password')
+
+    def clean(self):
+        cleaned_data = super(LoginForm, self).clean()
+        user_id = cleaned_data.get("user_id")
+
+        try:
+            InfluxUser.objects.get(user_id=user_id)
+        except InfluxUser.DoesNotExist:
+            raise forms.ValidationError("The User ID has not been registered.")
+
+        return cleaned_data

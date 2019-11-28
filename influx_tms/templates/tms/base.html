@@ -14,9 +14,15 @@
         <small>
             {% if user.is_authenticated %}
             Hello, {{ user.username }}!
+
+            <form id="logoutform" method="POST" action="{% url 'tms:logout' %}">
+                {% csrf_token %}
+                <input type="submit" value="Logout">
+            </form>
+
             {% else %}
             <p>You are not logged in.</p>
-            <a href="{% url 'tms:login' %}">login</a>
+            <a href="{% url 'tms:landing' %}">login</a>
             {% endif %}
         </small>
     </nav>
