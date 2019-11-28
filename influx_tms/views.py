@@ -1,3 +1,4 @@
+from django import forms
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
@@ -36,7 +37,9 @@ class LoginView(generic.FormView):
 
             if (user is not None and user.is_active):
                 login(self.request, user)
-
+            else:
+                form.add_error('user_password', error=forms.ValidationError("Password is incorrect."))
+                return super().form_invalid(form)
 
         except InfluxUser.DoesNotExist:
             return super().form_invalid(form)
