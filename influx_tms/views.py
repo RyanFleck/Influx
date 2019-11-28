@@ -42,6 +42,7 @@ class RegistrationView(generic.FormView):
         username = "u{}".format(user_id)
         print("Username: {}".format(username))
 
+
         InfluxUser.objects.create_user(
             username,
             email=form.cleaned_data['user_email_address'],
