@@ -51,8 +51,15 @@ class RegistrationView(generic.FormView):
             institution=Institution.objects.get(name="University of Ottawa")
         )
 
-        Student.objects.create(
-            user=InfluxUser.objects.get(user_id=user_id),
-        )
+        # I'd rather check the first digit of the institutional ID, but this will do for now.
+        if (form.cleaned_data['instructor']):
+            Instructor.objects.create(
+                user=InfluxUser.objects.get(user_id=user_id),
+            )
+
+        else:
+            Student.objects.create(
+                user=InfluxUser.objects.get(user_id=user_id),
+            )
 
         return super().form_valid(form)
