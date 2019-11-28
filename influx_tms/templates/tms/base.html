@@ -13,16 +13,15 @@
         <h1>InFlux TMS</h1>
         <small>
             {% if user.is_authenticated %}
-            Hello, {{ user.username }}!
+            Hello, {{ user.first_and_given_name }}!
 
             <form id="logoutform" method="POST" action="{% url 'tms:logout' %}">
                 {% csrf_token %}
-                <input type="submit" value="Logout">
+                <input type="submit" class="logout-button" value="Logout">
             </form>
 
             {% else %}
-            <p>You are not logged in.</p>
-            <a href="{% url 'tms:landing' %}">login</a>
+            <p>Welcome to InFlux TMS. Please log in.</p>
             {% endif %}
         </small>
     </nav>

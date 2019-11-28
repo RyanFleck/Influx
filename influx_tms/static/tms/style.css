@@ -29,3 +29,8 @@ input {
     font-size: 18px;
     margin: 10px 0px;
 }
+
+ul.errorlist {
+    color: red;
+    list-style: disclosure-closed;
+}
