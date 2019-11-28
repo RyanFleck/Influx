@@ -8,17 +8,17 @@ from django.db import transaction
 class RegistrationForm(forms.Form):
     # User identification (employee or student number)
     user_id = forms.CharField(
-        label='User ID', max_length=20, initial="1234567")
+        label='User ID', max_length=20)
     instructor = forms.BooleanField(required=False, label="Instructor")
     # Login Password
     user_password = forms.CharField(
-        widget=forms.PasswordInput, label='Password', initial="nicoandthevelvetunderground")
+        widget=forms.PasswordInput, label='Password')
     #Name (First and Given)
     user_full_name = forms.CharField(
-        label="Full Name", max_length=200, initial="Neato Burrito")
+        label="Full Name", max_length=200)
     # Email address
     user_email_address = forms.EmailField(
-        initial="Neato.Burrito@evil.google.corp")
+        initial="student@university.com")
 
     def clean(self):
         cleaned_data = super(RegistrationForm, self).clean()
@@ -47,7 +47,7 @@ class RegistrationForm(forms.Form):
 
 class LoginForm(forms.Form):
     user_id = forms.CharField(
-        label='User ID', max_length=20, initial="1234567")
+        label='User ID', max_length=20, initial="8276723")
     user_password = forms.CharField(
         widget=forms.PasswordInput, label='Password')
 

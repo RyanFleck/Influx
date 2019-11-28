@@ -55,7 +55,7 @@ class Instructor(models.Model):
     user = models.OneToOneField(
         InfluxUser, on_delete=models.CASCADE, primary_key=True)
 
-    sections = models.ManyToManyField(Section)
+    instructing_sections = models.ManyToManyField(Section)
 
     def __str__(self):
         return self.user.first_and_given_name
@@ -66,6 +66,7 @@ class Student(models.Model):
         InfluxUser, on_delete=models.CASCADE, primary_key=True)
 
     teams = models.ManyToManyField(Team)
+    course_sections = models.ManyToManyField(Section)
 
     def __str__(self):
         return self.user.first_and_given_name
