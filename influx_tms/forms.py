@@ -5,20 +5,6 @@ from .models import InfluxUser
 from django.db import transaction
 
 
-class InfluxUserCreationForm(UserCreationForm):
-
-    class Meta:
-        model = InfluxUser
-        fields = ('user_id', 'first_and_given_name', 'email')
-
-
-class InfluxUserUpdateForm(UserChangeForm):
-
-    class Meta:
-        model = InfluxUser
-        fields = ('user_id', 'first_and_given_name', 'email')
-
-
 class RegistrationForm(forms.Form):
     # User identification (employee or student number)
     user_id = forms.CharField(
@@ -75,3 +61,17 @@ class LoginForm(forms.Form):
             raise forms.ValidationError("The User ID has not been registered.")
 
         return cleaned_data
+
+
+class InfluxUserCreationForm(UserCreationForm):
+
+    class Meta:
+        model = InfluxUser
+        fields = ('user_id', 'first_and_given_name', 'email')
+
+
+class InfluxUserUpdateForm(UserChangeForm):
+
+    class Meta:
+        model = InfluxUser
+        fields = ('user_id', 'first_and_given_name', 'email')

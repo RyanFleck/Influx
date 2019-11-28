@@ -15,12 +15,16 @@ from .forms import RegistrationForm, LoginForm
 class LandingView(LoginRequiredMixin, generic.TemplateView):
     template_name = "tms/landing.html"
 
+    def get_context_data(self, *args, **kwargs):
+        context = super(LandingView, self).get_context_data(*args, **kwargs)
+        context['message'] = 'Hello World!'
+        return context
+
 
 class LoginView(generic.FormView):
     form_class = LoginForm
     template_name = "tms/login.html"
     success_url = reverse_lazy('tms:landing')
-
 
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -33,12 +37,14 @@ class LoginView(generic.FormView):
             u = InfluxUser.objects.get(user_id=form.cleaned_data['user_id'])
             print('User: {}'.format(u.username))
 
-            user = authenticate(username=u.username, password=form.cleaned_data['user_password'])
+            user = authenticate(username=u.username,
+                                password=form.cleaned_data['user_password'])
 
             if (user is not None and user.is_active):
                 login(self.request, user)
             else:
-                form.add_error('user_password', error=forms.ValidationError("Password is incorrect."))
+                form.add_error('user_password', error=forms.ValidationError(
+                    "Password is incorrect."))
                 return super().form_invalid(form)
 
         except InfluxUser.DoesNotExist:
@@ -57,7 +63,6 @@ class RegistrationView(generic.FormView):
         user_id = form.cleaned_data['user_id']
         username = "u{}".format(user_id)
         print("Username: {}".format(username))
-
 
         InfluxUser.objects.create_user(
             username,
@@ -80,6 +85,7 @@ class RegistrationView(generic.FormView):
             )
 
         return super().form_valid(form)
+
 
 def logout(request):
     if request.method == "POST" and request.user.is_authenticated:

@@ -14,6 +14,10 @@
         <small>
             {% if user.is_authenticated %}
             Hello, {{ user.first_and_given_name }}!
+            <br> 
+            {% if user.instructor %}Instructor{% endif %}
+            {% if user.student %}Student No.{% endif %}
+            {{ user.user_id}} 
 
             <form id="logoutform" method="POST" action="{% url 'tms:logout' %}">
                 {% csrf_token %}
