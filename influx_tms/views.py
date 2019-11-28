@@ -6,12 +6,14 @@ from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import InfluxUser, Student, Instructor
-from .forms import RegistrationForm
+from .forms import RegistrationForm, LoginForm
 
 # Create your views here.
 
-class LoginView(generic.TemplateView):
+class LoginView(generic.FormView):
+    form_class = LoginForm 
     template_name = "tms/login.html"
+    success_url = '/tms/landing'
 
 class LandingView(LoginRequiredMixin, generic.TemplateView):
     template_name = "tms/landing.html"

@@ -5,6 +5,12 @@
 
 <p>Welcome to the homepage for the InFlux TMS. <br>Please sign up or login to continue.</p>
 
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Login">
+</form>
+
 <a href="{% url 'tms:registration' %}">Register</a>
 
 {% endblock %}
