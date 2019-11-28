@@ -93,3 +93,11 @@ def logout(request):
         return HttpResponseRedirect(reverse('tms:login'))
     else:
         return HttpResponseRedirect(request.path_info)
+
+
+class InfoView(LoginRequiredMixin, generic.ListView):
+    template_name = "tms/info.html"
+    context_object_name = 'institutions'
+
+    def get_queryset(self):
+        return Institution.objects.order_by('name')
