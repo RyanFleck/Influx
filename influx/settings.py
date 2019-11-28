@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/tms/landing'
 AUTH_USER_MODEL = 'influx_tms.InfluxUser'
 
 MIDDLEWARE = [
@@ -80,7 +82,8 @@ WSGI_APPLICATION = 'influx.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {}
+DATABASES = {
+}
 DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 
@@ -108,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'EST' # Was UTC
+TIME_ZONE = 'EST'  # Was UTC
 
 USE_I18N = True
 

@@ -11,6 +11,14 @@
 <body>
     <nav>
         <h1>InFlux TMS</h1>
+        <small>
+            {% if user.is_authenticated %}
+            Hello, {{ user.username }}!
+            {% else %}
+            <p>You are not logged in.</p>
+            <a href="{% url 'tms:login' %}">login</a>
+            {% endif %}
+        </small>
     </nav>
     {% block main %}
     {% endblock %}
