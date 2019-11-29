@@ -1,7 +1,11 @@
 {% extends "tms/base.html" %}
 {% block main %}
 
-<h1>Home</h1>
+<h1>
+    {% if user.instructor %}Instructor{% endif %}
+    {% if user.student %}Student{% endif %}
+    Homepage
+</h1>
 
 <p>Welcome to the homepage for the InFlux TMS.</p>
 
