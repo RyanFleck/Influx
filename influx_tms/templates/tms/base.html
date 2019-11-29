@@ -16,7 +16,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="#FFF">
 
     <!---->
-    <link rel='icon' href="{% static 'tms/favicon.ico' %}" type='image/x-icon'/>
+    <link rel='icon' href="{% static 'tms/favicon.ico' %}" type='image/x-icon' />
 
     <!-- Fonts and CSS -->
     <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,400i,600" rel="stylesheet">
@@ -25,14 +25,16 @@
 
 <body>
     <nav id="sitenav">
-        <a id="sitetitle" href="{% url 'tms:landing' %}"><h1>InFlux TMS</h1></a>
+        <a id="sitetitle" href="{% url 'tms:landing' %}">
+            <h1>InFlux TMS</h1>
+        </a>
         <small>
             {% if user.is_authenticated %}
             Hello, {{ user.first_and_given_name }}!
-            <br> 
+            <br>
             {% if user.instructor %}Instructor{% endif %}
             {% if user.student %}Student No.{% endif %}
-            {{ user.user_id}} 
+            {{ user.user_id}}
 
             <form id="logoutform" method="POST" action="{% url 'tms:logout' %}">
                 {% csrf_token %}
@@ -46,6 +48,15 @@
     </nav>
     {% block main %}
     {% endblock %}
+
+    <br />
+    <br />
+    <footer>
+        <small>
+            <a href="{% url 'tms:landing' %}">Home</a> &middot;
+            <a href="{% url 'tms:info' %}">System Info</a>
+        </small>
+    </footer>
 </body>
 
 </html>

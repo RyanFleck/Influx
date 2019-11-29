@@ -43,3 +43,15 @@ ul.errorlist {
     color: black;
     text-decoration: none;
 }
+
+small.id {
+    color: #999;
+}
+
+footer {
+    padding-top: 3em;
+}
+
+footer a {
+    text-decoration: none;
+}

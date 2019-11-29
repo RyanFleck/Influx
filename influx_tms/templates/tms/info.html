@@ -14,7 +14,7 @@
         {% if user.instructor %}Instructor{% endif %}
         {% if user.student %}Student{% endif %}
         {{ user.first_and_given_name}}
-        id:{{ user.id }}
+        <small class="id">id:{{ user.id }}</small>
     </li>
     {% endfor %}
 </ul>
@@ -24,10 +24,10 @@
     {% for course in insta.course_set.all %}
     <li>
         {{ course.course_code}}
-        id:{{ course.id }}<br>Sections:
+        <small class="id">id:{{ course.id }}</small><br>Sections:
         <ol>
             {% for section in course.section_set.all %}
-            <li>{{ course.course_code }}-{{ section.section_code }}</li>
+            <li>{{ course.course_code }}-{{ section.section_code }} <small class="id">id:{{section.id}}</small></li>
 
             {% endfor %}
         </ol>
