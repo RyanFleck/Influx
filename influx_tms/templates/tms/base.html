@@ -25,7 +25,7 @@
 
 <body>
     <nav>
-        <h1>InFlux TMS</h1>
+        <a id="sitetitle" href="{% url 'tms:landing' %}"><h1>InFlux TMS</h1></a>
         <small>
             {% if user.is_authenticated %}
             Hello, {{ user.first_and_given_name }}!
