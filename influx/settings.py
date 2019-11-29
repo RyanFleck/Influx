@@ -48,6 +48,9 @@ LOGIN_REDIRECT_URL = '/tms/landing'
 LOGOUT_REDIRECT_URL = '/'
 AUTH_USER_MODEL = 'influx_tms.InfluxUser'
 
+if 'DYNO' in os.environ:
+    SECURE_SSL_REDIRECT = True
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
