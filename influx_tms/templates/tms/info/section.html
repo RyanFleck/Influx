@@ -3,4 +3,12 @@
 
 <h1>{{ section.course.course_code }}-{{ section.section_code }}</h1>
 
+
+<h3>Students</h3>
+<ol>
+    {% for student in section.student_set.all %}
+    <li>{{ student.user.first_and_given_name }}</li>
+    {% endfor %}
+</ol>
+
 {% endblock %}

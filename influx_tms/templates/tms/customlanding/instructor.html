@@ -17,7 +17,6 @@
         <b>{{ section.course.course_code }}-{{ section.section_code }}</b>
         <ol>
             {% for student in section.student_set.all %}
-            <li>Test</li>
             <li>{{ student.user.first_and_given_name }}</li>
             {% endfor %}
         </ol>

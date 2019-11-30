@@ -115,11 +115,100 @@ class CourseDetailView(generic.DetailView):
     template_name = 'tms/info/course.html'
     context_object_name = 'course'
 
+    def get_sections(self, course=None):
+        if not course:
+            course = super(CourseDetailView, self).get_context_data()['object']
+        sections = Section.objects.filter(course=course)
+        return sections
+
+    def get_teams(self, course=None):
+        if not course:
+            course = super(CourseDetailView, self).get_context_data()['object']
+        sections = self.get_sections(course=course)
+        teams = []
+        for section in sections:
+            teams += Team.objects.filter(section=section)
+        return teams
+
+    def get_students(self, course=None):
+        if not course:
+            course = super(CourseDetailView, self).get_context_data()['object']
+        sections = self.get_sections(course=course)
+        return Student.objects.filter(
+            course_sections__in=sections).distinct()
+
+    def get_students_not_in_teams(self):
+        # This is the course object.
+        course = super(CourseDetailView, self).get_context_data()['object']
+
+        sections = self.get_sections(course=course)
+        teams = self.get_teams(course=course)
+        return Student.objects.filter(
+            course_sections__in=sections).exclude(teams__in=teams).distinct()
+
+    def get_student_team_pairs(self):
+        # This is the course object.
+        course = super(CourseDetailView, self).get_context_data()['object']
+
+        sections = self.get_sections(course=course)
+        teams = self.get_teams(course=course)
+        students_in_teams = Student.objects.filter(
+            course_sections__in=sections, teams__in=teams)
+
+        student_team_pairs = []
+        for student in students_in_teams:
+            pair = {}
+            pair['student'] = student
+            pair['team'] = None
+
+            for team in student.teams.all():
+                for section in sections:
+                    if team.section == section:
+                        pair['team'] = team
+                        break
+                        break
+
+            student_team_pairs.append(dict(pair))
+            continue
+
+        print(student_team_pairs)
+        x = list(map(lambda x: "{}, {}".format(
+            x['student'].user.first_and_given_name,
+            x['team'].team_name
+        ), student_team_pairs))
+        print(x)
+        return x
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(CourseDetailView, self).get_context_data(
+            *args, **kwargs)
+
+        context['message'] = 'Welcome to the homepage for the InFlux TMS.'
+        context['students_not_in_teams'] = self.get_students_not_in_teams()
+        context['student_team_pairs'] = self.get_student_team_pairs()
+        context['students'] = self.get_students()
+
+        return context
+
 
 class SectionDetailView(generic.DetailView):
     model = Section
     template_name = 'tms/info/section.html'
     context_object_name = 'section'
+
+    # TO be implemented.
+    def get_students_not_in_team(self):
+        pass
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(SectionDetailView, self).get_context_data(
+            *args, **kwargs)
+
+        # To be implemented.
+        context['message'] = 'Welcome to the homepage for the InFlux TMS.'
+        context['students_not_in_team'] = ['a', 'b', 'c']
+
+        return context
 
 
 class TeamDetailView(generic.DetailView):

@@ -57,6 +57,25 @@
 
             {% endfor %}
         </ol>
+
+
+        <b>Students:</b>
+        <ol>
+            {% for section in course.section_set.all %}
+            {% for student in section.student_set.all %}
+            <li>{{ student.user.first_and_given_name }}</li>
+            {% endfor %}
+            {% endfor %}
+        </ol>
+        
+        <b>Students not in Teams:</b>
+        <ol>
+            {% for section in course.section_set.all %}
+            {% for student in section.student_set.all %}
+            <li>{{ student.user.first_and_given_name }}</li>
+            {% endfor %}
+            {% endfor %}
+        </ol>
     </li>
     {% endfor %}
 </ul>
