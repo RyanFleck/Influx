@@ -3,7 +3,11 @@
 
 <h1>{{course.course_code}}</h1>
 
-<h3>Students</h3>
+{% if user.instructor %}
+<a href="{% url 'tms:coursesetup' course.id %}">Modify course settings</a>
+{% endif %}
+
+<h3>All Students</h3>
 <ol>
     {% for student in students %}
     <li>{{ student.user.first_and_given_name }}</li>
@@ -20,14 +24,8 @@
 <h3>Students in Teams</h3>
 <ol>
     {% for pair in student_team_pairs %}
-    {{ pair }}
+    <li>{{ pair.student.user.first_and_given_name }} in team {{ pair.team.team_name}}</li>
     {% endfor %}
 </ol>
-
-{% if user.instructor %}
-
-<h3>Course Setup</h3>
-
-{% endif %}
 
 {% endblock %}

@@ -82,3 +82,4 @@ class Student(models.Model):
 
     def __str__(self):
         return self.user.first_and_given_name
+

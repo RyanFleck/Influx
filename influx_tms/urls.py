@@ -12,6 +12,8 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('tms/info/course/<int:pk>/',
          views.CourseDetailView.as_view(), name='courseinfo'),
+    path('tms/info/course/<int:pk>/setup/',
+         views.CourseSetupView.as_view(), name='coursesetup'),
     path('tms/info/team/<int:pk>/',
          views.TeamDetailView.as_view(), name='teaminfo'),
     path('tms/info/section/<int:pk>/',

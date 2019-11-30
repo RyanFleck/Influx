@@ -7,7 +7,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import InfluxUser, Student, Instructor, Institution, Course, Section, Team
-from .forms import RegistrationForm, LoginForm
+from .forms import RegistrationForm, LoginForm, CourseSetupForm
 
 # Create your views here.
 
@@ -159,7 +159,6 @@ class CourseDetailView(generic.DetailView):
         for student in students_in_teams:
             pair = {}
             pair['student'] = student
-            pair['team'] = None
 
             for team in student.teams.all():
                 for section in sections:
@@ -172,12 +171,7 @@ class CourseDetailView(generic.DetailView):
             continue
 
         print(student_team_pairs)
-        x = list(map(lambda x: "{}, {}".format(
-            x['student'].user.first_and_given_name,
-            x['team'].team_name
-        ), student_team_pairs))
-        print(x)
-        return x
+        return student_team_pairs
 
     def get_context_data(self, *args, **kwargs):
         context = super(CourseDetailView, self).get_context_data(
@@ -189,6 +183,51 @@ class CourseDetailView(generic.DetailView):
         context['students'] = self.get_students()
 
         return context
+
+###############################################################################
+###############################################################################
+
+
+class CourseSetupView(generic.FormView):
+    form_class = CourseSetupForm
+    template_name = "tms/coursesetup.html"
+
+    def get(self, request, *args, **kwargs):
+
+        # Ensure that the user is an instructor.
+        if not request.user.instructor:
+            return HttpResponseRedirect('/tms/landing')
+
+        # Check if the course exists.
+        try:
+            course = Course.objects.get(id=self.kwargs['pk'])
+        except InfluxUser.DoesNotExist:
+            return HttpResponseRedirect('/tms/landing')
+
+        # Display the form page.
+        return super(CourseSetupView, self).get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+
+        # Get instructor courses
+        print("User " + str(self.request.user.id))
+        user = InfluxUser.objects.get(id=self.request.user.id)
+        instructor = user.instructor
+        course = Course.objects.filter(id=self.kwargs['pk'])
+        for section in instructor.instructing_sections.all():
+            if section.course == course:
+                print('Good')
+
+
+        # Attempt to change the team parameters here.
+        form.add_error('max_members', error=forms.ValidationError(
+            "Cannot be lower than 19"))
+        return super().form_invalid(form)
+
+        return super().form_valid(form)
+
+###############################################################################
+###############################################################################
 
 
 class SectionDetailView(generic.DetailView):

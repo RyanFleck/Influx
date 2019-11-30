@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import InfluxUser
 from django.db import transaction
 
+import datetime
+
 
 class RegistrationForm(forms.Form):
     # User identification (employee or student number)
@@ -44,6 +46,29 @@ class RegistrationForm(forms.Form):
 
         return cleaned_data
 
+
+############################################################
+############################################################
+
+class CourseSetupForm(forms.Form):
+
+    min_members = forms.IntegerField(label="Minimum Team Members", initial=1)
+    max_members = forms.IntegerField(label="Maximum Team Members", initial=4)
+
+    date = forms.DateField(label="Team Creation Deadline",
+                           initial=datetime.date.today()+datetime.timedelta(days=+14))
+
+    def clean(self):
+        cleaned_data = super(CourseSetupForm, self).clean()
+        # raise forms.ValidationError("The form is in development")
+
+        # Date must not be in the past.
+        
+        return cleaned_data
+
+
+############################################################
+############################################################
 
 class LoginForm(forms.Form):
     user_id = forms.CharField(
