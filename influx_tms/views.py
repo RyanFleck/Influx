@@ -17,7 +17,7 @@ class LandingView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(LandingView, self).get_context_data(*args, **kwargs)
-        context['message'] = 'Hello World!'
+        context['message'] = 'Welcome to the homepage for the InFlux TMS.'
         return context
 
 
