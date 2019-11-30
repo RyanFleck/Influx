@@ -14,7 +14,8 @@ class InfluxUserAdmin(UserAdmin):
     add_form = InfluxUserCreationForm
     form = InfluxUserUpdateForm
     model = InfluxUser
-    list_display = ['user_id', 'first_and_given_name', 'username','email']
+    list_display = ['user_id', 'first_and_given_name', 'username', 'email']
+
 
 admin.site.register(InfluxUser, InfluxUserAdmin)
 

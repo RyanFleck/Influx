@@ -18,7 +18,7 @@
         <ol>
             {% for student in section.student_set.all %}
             <li>Test</li>
-            <li>{{ student.influx_user.first_and_given_name }}</li>
+            <li>{{ student.user.first_and_given_name }}</li>
             {% endfor %}
         </ol>
 

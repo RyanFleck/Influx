@@ -27,15 +27,26 @@ class Section(models.Model):
     section_code = models.CharField(max_length=50)
 
     def __str__(self):
-        return "{}-{}".format(self.course.course_code,self.section_code)
+        return "{}-{}".format(self.course.course_code, self.section_code)
 
 
 class Team(models.Model):
-    # ID will be provided when the teams are created.
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
     team_name = models.CharField(max_length=200)
-    creation_date = models.DateTimeField('date created')
+    creation_date = models.DateTimeField(
+        'date created', auto_now_add=True, blank=True)
     formation_deadline = models.DateTimeField('formation deadline')
+
+    liasion = models.ForeignKey(
+        'Student', on_delete=models.SET_NULL, blank=True, null=True)
+
+    min_students = models.IntegerField(default=0)
+    max_students = models.IntegerField(default=4)
+
+    def save(self, *args, **kwargs):
+        print("Saving team...")
+        # TODO: Set first member as liasion.
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.team_name

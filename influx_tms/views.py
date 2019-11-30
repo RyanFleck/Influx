@@ -54,6 +54,8 @@ class LoginView(generic.FormView):
 
 
 class RegistrationView(generic.FormView):
+    '''RegistrationUI'''
+
     form_class = RegistrationForm
     template_name = "tms/registration.html"
     success_url = '/'
@@ -103,23 +105,24 @@ class InfoView(LoginRequiredMixin, generic.ListView):
         return Institution.objects.order_by('name')
 
 
-
 '''
 Below are model-specific views.
 '''
 
 
 class CourseDetailView(generic.DetailView):
-    model = Course 
+    model = Course
     template_name = 'tms/info/course.html'
     context_object_name = 'course'
 
+
 class SectionDetailView(generic.DetailView):
-    model = Section 
+    model = Section
     template_name = 'tms/info/section.html'
     context_object_name = 'section'
 
+
 class TeamDetailView(generic.DetailView):
-    model = Team 
+    model = Team
     template_name = 'tms/info/team.html'
     context_object_name = 'team'

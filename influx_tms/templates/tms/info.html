@@ -78,6 +78,16 @@
                 <a href="{% url 'tms:teaminfo' team.id %}">
                     {{ team.team_name }}
                 </a>
+
+                <br />
+                {% if team.liasion %}
+                <b>Liasion:</b>
+                    {{ team.liasion.user.first_and_given_name }}
+                {% else %}
+                No liasion.
+                {% endif %}
+
+
                 <br />
                 {% if team.student_set.count > 0 %}
                 <b>Members:</b>
