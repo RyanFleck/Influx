@@ -1,3 +1,11 @@
-<p>Student digs.</p>
+{% if user.student %}
 
-Hello, {{ user.first_and_given_name }}!
+<h3>Courses:</h3>
+
+<ol>
+    {% for section in user.student.course_sections.all %}
+    <li>{{ section.course.course_code }}-{{ section.section_code }}</li>
+    {% endfor %}
+</ol>
+
+{% endif %}

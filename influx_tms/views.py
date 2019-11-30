@@ -6,7 +6,7 @@ from django.views import generic
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import InfluxUser, Student, Instructor, Institution
+from .models import InfluxUser, Student, Instructor, Institution, Course, Section, Team
 from .forms import RegistrationForm, LoginForm
 
 # Create your views here.
@@ -101,3 +101,25 @@ class InfoView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         return Institution.objects.order_by('name')
+
+
+
+'''
+Below are model-specific views.
+'''
+
+
+class CourseDetailView(generic.DetailView):
+    model = Course 
+    template_name = 'tms/info/course.html'
+    context_object_name = 'course'
+
+class SectionDetailView(generic.DetailView):
+    model = Section 
+    template_name = 'tms/info/section.html'
+    context_object_name = 'section'
+
+class TeamDetailView(generic.DetailView):
+    model = Team 
+    template_name = 'tms/info/team.html'
+    context_object_name = 'team'

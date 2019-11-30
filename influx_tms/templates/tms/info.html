@@ -3,7 +3,8 @@
 
 <h1>System Information</h1>
 
-<p>The following page has been made availabe during the building, testing, and debugging phases of the project so the student and instructor can easily visualize the data present within the Influx database.</p>
+<p>The following page has been made availabe during the building, testing, and debugging phases of the project so the
+    student and instructor can easily visualize the data present within the Influx database.</p>
 
 {% for insta in institutions %}
 <h2>{{ insta.name }}</h2>
@@ -13,10 +14,31 @@
 <ul>
     {% for user in insta.influxuser_set.all %}
     <li>
-        {% if user.instructor %}Instructor{% endif %}
-        {% if user.student %}Student{% endif %}
+        <i>
+            {% if user.instructor %}Instructor{% endif %}
+            {% if user.student %}Student{% endif %}
+        </i>
         {{ user.first_and_given_name}}
         <small class="id">id:{{ user.id }}</small>
+        <br>
+
+        {% if user.instructor and user.instructor.instructing_sections.count > 0 %}
+        <b>Instructs:</b>
+        <ol>
+
+            {% for section in user.instructor.instructing_sections.all %}
+            <li>{{ section.course.course_code }}-{{ section.section_code }}</li>
+            {% endfor %}
+        </ol>
+        {% endif %}
+        {% if user.student and user.student.course_sections.count > 0 %}
+        <b>Registered in:</b>
+        <ol>
+            {% for section in user.student.course_sections.all %}
+            <li>{{ section.course.course_code }}-{{ section.section_code }}</li>
+            {% endfor %}
+        </ol>
+        {% endif %}
     </li>
     {% endfor %}
 </ul>
@@ -25,15 +47,54 @@
 <ul>
     {% for course in insta.course_set.all %}
     <li>
-        {{ course.course_code}}
-        <small class="id">id:{{ course.id }}</small><br>Sections:
+        <b><a href="{% url 'tms:courseinfo' course.id %}">{{ course.course_code}}</a></b>
+        <small class="id">id:{{ course.id }}</small><br>
+        <b>Sections:</b>
         <ol>
             {% for section in course.section_set.all %}
-            <li>{{ course.course_code }}-{{ section.section_code }} <small class="id">id:{{section.id}}</small></li>
+            <li><a href="{% url 'tms:sectioninfo' section.id %}">{{ course.course_code }}-{{ section.section_code }}</a>
+                <small class="id">id:{{section.id}}</small></li>
 
             {% endfor %}
         </ol>
     </li>
+    {% endfor %}
+</ul>
+
+<h3>Teams</h3>
+<ul>
+    {% for course in insta.course_set.all %}
+    {% for section in course.section_set.all %}
+    <li>
+        <b><a href="{% url 'tms:sectioninfo' section.id %}">{{ course.course_code }}-{{ section.section_code }}</a></b>
+        <small class="id">id:{{section.id}}</small>
+
+        <br />
+        <b>Teams:</b>
+        <ol>
+            {% for team in section.team_set.all %}
+
+            <li>
+                <a href="{% url 'tms:teaminfo' team.id %}">
+                    {{ team.team_name }}
+                </a>
+                <br />
+                {% if team.student_set.count > 0 %}
+                <b>Members:</b>
+                <ul>
+                    {% for member in team.student_set.all %}
+                    <li>{{ member.user.first_and_given_name }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                No members.
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ol>
+    </li>
+
+    {% endfor %}
     {% endfor %}
 </ul>
 

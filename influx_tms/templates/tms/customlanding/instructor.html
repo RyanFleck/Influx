@@ -1,5 +1,29 @@
+{% if user.instructor %}
 <p>Instructor digs.</p>
 
 <h3>Sections you Instruct:</h3>
 
-Hello, {{ user.first_and_given_name }}!
+<ol>
+    {% for section in user.instructor.instructing_sections.all %}
+    <li>{{ section.course.course_code }}-{{ section.section_code }}</li>
+    {% endfor %}
+</ol>
+
+<b>Students in Sections:</b>
+
+<ol>
+    {% for section in user.instructor.instructing_sections.all %}
+    <li>
+        <b>{{ section.course.course_code }}-{{ section.section_code }}</b>
+        <ol>
+            {% for student in section.student_set.all %}
+            <li>Test</li>
+            <li>{{ student.influx_user.first_and_given_name }}</li>
+            {% endfor %}
+        </ol>
+
+    </li>
+    {% endfor %}
+</ol>
+
+{% endif %}
