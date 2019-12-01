@@ -207,10 +207,9 @@ class CourseSetupView(generic.FormView):
         # Display the form page.
         return super(CourseSetupView, self).get(request, *args, **kwargs)
 
-
     def get_form_kwargs(self):
         kwargs = super(CourseSetupView, self).get_form_kwargs()
-        course =  Course.objects.get(id=self.kwargs['pk'])
+        course = Course.objects.get(id=self.kwargs['pk'])
         kwargs['course_name'] = course.course_code
         first_section = course.section_set.first()
         first_team = first_section.team_set.first()
@@ -223,14 +222,24 @@ class CourseSetupView(generic.FormView):
         print("User " + str(self.request.user.id))
         user = InfluxUser.objects.get(id=self.request.user.id)
         instructor = user.instructor
-        course = Course.objects.get(id=self.kwargs['pk'])
+
+        # Validate that the course exists
+        course = None
+        try:
+            course = Course.objects.get(course_code=form.cleaned_data['course'])
+        except Course.DoesNotExist:
+            form.add_error('course', error=forms.ValidationError(
+                "Course does not exist."))
+            return super().form_invalid(form)
+
+        # Validate that the instructor teaches the course.
         for section in instructor.instructing_sections.all():
             if section.course == course:
                 print('Good')
             else:
+                form.add_error('max_members', error=forms.ValidationError(
+                    "Cannot be lower than 19"))
                 return super().form_invalid(form)
-
-
 
         # Attempt to change the team parameters here.
         form.add_error('max_members', error=forms.ValidationError(
@@ -238,7 +247,7 @@ class CourseSetupView(generic.FormView):
         return super().form_invalid(form)
 
         return super().form_valid(form)
-    
+
     def get_context_data(self, *args, **kwargs):
         context = super(CourseSetupView, self).get_context_data(
             *args, **kwargs)
@@ -248,7 +257,6 @@ class CourseSetupView(generic.FormView):
 
         return context
 
-###############################################################################
 ###############################################################################
 
 

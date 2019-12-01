@@ -74,17 +74,16 @@ class CourseSetupForm(forms.Form):
 
         context = super(CourseSetupForm, self).__init__(
             *args, **kwargs)
-        
+
         if course_name:
             self.fields['course'] = forms.CharField(
                 label='Course Name', initial=course_name)
 
         if max_team_members:
-            self.fields['max_members'] = forms.IntegerField(label="Maximum Team Members", initial=max_team_members)
+            self.fields['max_members'] = forms.IntegerField(
+                label="Maximum Team Members", initial=max_team_members)
 
 
-
-############################################################
 ############################################################
 
 class LoginForm(forms.Form):
