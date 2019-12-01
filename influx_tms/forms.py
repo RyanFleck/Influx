@@ -1,7 +1,7 @@
 # users/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import InfluxUser
+from .models import InfluxUser, Course
 from django.db import transaction
 
 import datetime
@@ -51,6 +51,7 @@ class RegistrationForm(forms.Form):
 ############################################################
 
 class CourseSetupForm(forms.Form):
+    course = forms.CharField(label='static')
 
     min_members = forms.IntegerField(label="Minimum Team Members", initial=1)
     max_members = forms.IntegerField(label="Maximum Team Members", initial=4)
@@ -63,8 +64,17 @@ class CourseSetupForm(forms.Form):
         # raise forms.ValidationError("The form is in development")
 
         # Date must not be in the past.
-        
+
         return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+
+        course_name = kwargs.pop('course_name')
+        context = super(CourseSetupForm, self).__init__(
+            *args, **kwargs)
+        if course_name:
+            self.fields['course'] = forms.CharField(
+                label='Course Name', initial=course_name)
 
 
 ############################################################

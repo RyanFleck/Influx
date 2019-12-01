@@ -3,12 +3,8 @@
 
 <h1>Modify Course</h1>
 
-<p>Course id: {{ course.id }}</p>
-<p>Instructor id: {{ user.id }}</p>
-
 <form method="post">
     {% csrf_token %}
-     <input type="hidden" id="course" name="course" value="{{ course.id }}">
     {{ form.as_p }}
     <input type="submit" value="Update">
 </form>

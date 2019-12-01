@@ -207,16 +207,25 @@ class CourseSetupView(generic.FormView):
         # Display the form page.
         return super(CourseSetupView, self).get(request, *args, **kwargs)
 
+
+    def get_form_kwargs(self):
+        kwargs = super(CourseSetupView, self).get_form_kwargs()
+        kwargs['course_name'] = Course.objects.get(id=self.kwargs['pk']).course_code
+        return kwargs
+
     def form_valid(self, form):
 
         # Get instructor courses
         print("User " + str(self.request.user.id))
         user = InfluxUser.objects.get(id=self.request.user.id)
         instructor = user.instructor
-        course = Course.objects.filter(id=self.kwargs['pk'])
+        course = Course.objects.get(id=self.kwargs['pk'])
         for section in instructor.instructing_sections.all():
             if section.course == course:
                 print('Good')
+            else:
+                return super().form_invalid(form)
+
 
 
         # Attempt to change the team parameters here.
@@ -225,6 +234,15 @@ class CourseSetupView(generic.FormView):
         return super().form_invalid(form)
 
         return super().form_valid(form)
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super(CourseSetupView, self).get_context_data(
+            *args, **kwargs)
+
+        course = Course.objects.get(id=self.kwargs['pk'])
+        context['course_code'] = str(course.course_code)
+
+        return context
 
 ###############################################################################
 ###############################################################################
