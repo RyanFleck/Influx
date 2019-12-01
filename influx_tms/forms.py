@@ -70,11 +70,18 @@ class CourseSetupForm(forms.Form):
     def __init__(self, *args, **kwargs):
 
         course_name = kwargs.pop('course_name')
+        max_team_members = kwargs.pop('max_team_members')
+
         context = super(CourseSetupForm, self).__init__(
             *args, **kwargs)
+        
         if course_name:
             self.fields['course'] = forms.CharField(
                 label='Course Name', initial=course_name)
+
+        if max_team_members:
+            self.fields['max_members'] = forms.IntegerField(label="Maximum Team Members", initial=max_team_members)
+
 
 
 ############################################################

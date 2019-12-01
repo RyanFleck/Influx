@@ -210,7 +210,11 @@ class CourseSetupView(generic.FormView):
 
     def get_form_kwargs(self):
         kwargs = super(CourseSetupView, self).get_form_kwargs()
-        kwargs['course_name'] = Course.objects.get(id=self.kwargs['pk']).course_code
+        course =  Course.objects.get(id=self.kwargs['pk'])
+        kwargs['course_name'] = course.course_code
+        first_section = course.section_set.first()
+        first_team = first_section.team_set.first()
+        kwargs['max_team_members'] = first_team.max_students
         return kwargs
 
     def form_valid(self, form):
