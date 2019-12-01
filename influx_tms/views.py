@@ -10,8 +10,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import InfluxUser, Student, Instructor, Institution, Course, Section, Team
 from .forms import RegistrationForm, LoginForm, CourseSetupForm
 
-# Create your views here.
-
 
 class LandingView(LoginRequiredMixin, generic.TemplateView):
     template_name = "tms/landing.html"
@@ -19,7 +17,27 @@ class LandingView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super(LandingView, self).get_context_data(*args, **kwargs)
         context['message'] = 'Welcome to the homepage for the InFlux TMS.'
+        context['user_section_info'] = self.get_user_section_info()
+        self.add_students_without_teams_to_context_by_course(context)
         return context
+
+    def get_user_section_info(self):
+        pass
+
+    def add_students_without_teams_to_context_by_course(self, context):
+        try:
+            self.request.user.instructor
+        except Instructor.DoesNotExist:
+            return None 
+
+        user = InfluxUser.objects.get(id=self.request.user.id)
+        sections = user.instructor.instructing_sections.all()
+
+        for section in sections:
+            teams = Team.objects.filter(section=section)
+            students = Student.objects.filter(course_sections=section).exclude(teams__in=teams).distinct()
+            context[ 'no_team_{}'.format(section.course.course_code ,section.section_code) ] = students
+
 
 
 class LoginView(generic.FormView):
@@ -106,11 +124,6 @@ class InfoView(LoginRequiredMixin, generic.ListView):
         return Institution.objects.order_by('name')
 
 
-'''
-Below are model-specific views.
-'''
-
-
 class CourseDetailView(generic.DetailView):
     '''Consider breaking some of this logic into a separate class.'''
 
@@ -186,9 +199,6 @@ class CourseDetailView(generic.DetailView):
         context['students'] = self.get_students()
 
         return context
-
-###############################################################################
-###############################################################################
 
 
 class CourseSetupView(generic.FormView):
@@ -298,8 +308,6 @@ class CourseSetupView(generic.FormView):
         context['course_code'] = str(course.course_code)
 
         return context
-
-###############################################################################
 
 
 class SectionDetailView(generic.DetailView):

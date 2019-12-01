@@ -5,22 +5,44 @@
 
 <ol>
     {% for section in user.instructor.instructing_sections.all %}
-    <li>{{ section.course.course_code }}-{{ section.section_code }}</li>
+    <li>{{ section.course.course_code }}-{{ section.section_code }}
+        - <a href="{% url 'tms:courseinfo' section.course.id %}">course info</a>
+        - <a href="{% url 'tms:sectioninfo' section.id %}">section {{section.section_code}} info</a>
+    </li>
     {% endfor %}
 </ol>
 
-<b>Students in Sections:</b>
+<b>Students, Teams, Sections:</b>
 
 <ol>
     {% for section in user.instructor.instructing_sections.all %}
     <li>
         <b>{{ section.course.course_code }}-{{ section.section_code }}</b>
+        <br>Teams:
         <ol>
-            {% for student in section.student_set.all %}
+            {% for team in section.team_set.all %}
+            <li><b>{{ team.team_name  }}</b>
+                {% if team.student_set.count > 0 %}
+                <br>Students:
+                <ol>
+                    {% for student in team.student_set.all %}
+                    <li>{{ student.user.first_and_given_name }}</li>
+                    {% endfor %}
+
+                </ol>
+                {% else %}
+                <br>Team is empty.
+                {% endif %}
+            </li>
+            {% endfor %}
+
+        </ol>
+        <br>No Team:
+        <ol>
+            {% for student in students_without_team %}
             <li>{{ student.user.first_and_given_name }}</li>
             {% endfor %}
         </ol>
-
     </li>
     {% endfor %}
 </ol>
