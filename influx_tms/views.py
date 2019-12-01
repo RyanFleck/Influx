@@ -1,4 +1,5 @@
 from django import forms
+from functools import reduce
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
@@ -111,6 +112,8 @@ Below are model-specific views.
 
 
 class CourseDetailView(generic.DetailView):
+    '''Consider breaking some of this logic into a separate class.'''
+
     model = Course
     template_name = 'tms/info/course.html'
     context_object_name = 'course'
@@ -218,34 +221,60 @@ class CourseSetupView(generic.FormView):
 
     def form_valid(self, form):
 
-        # Get instructor courses
-        print("User " + str(self.request.user.id))
-        user = InfluxUser.objects.get(id=self.request.user.id)
-        instructor = user.instructor
+        # Objects we need to validate this form.
+        instructor = InfluxUser.objects.get(id=self.request.user.id).instructor
+        course = None
 
         # Validate that the course exists
-        course = None
         try:
-            course = Course.objects.get(course_code=form.cleaned_data['course'])
+            course = Course.objects.get(
+                course_code=form.cleaned_data['course'])
         except Course.DoesNotExist:
             form.add_error('course', error=forms.ValidationError(
                 "Course does not exist."))
             return super().form_invalid(form)
 
         # Validate that the instructor teaches the course.
+        is_instructor = False
         for section in instructor.instructing_sections.all():
             if section.course == course:
                 print('Good')
-            else:
-                form.add_error('max_members', error=forms.ValidationError(
-                    "Cannot be lower than 19"))
-                return super().form_invalid(form)
 
-        # Attempt to change the team parameters here.
+        if is_instructor:
+            form.add_error('course', error=forms.ValidationError(
+                "You do not instruct this course."))
+            return super().form_invalid(form)
+
+        # Ensure that no affiliated teams have too many members.
+        sections = Section.objects.filter(course=course).all()
+        print(sections)
+        teams = []
+        for section in sections:
+            teams += Team.objects.filter(section=section)
+
+        minimum_team_maximum = 0
+        largest_team_name = ""
+        for team in teams:
+            team_size = team.student_set.count()
+            if team_size > minimum_team_maximum:
+                largest_team_name = team.team_name
+                minimum_team_maximum = team_size
+
+        max_change = form.cleaned_data['max_members']
+        if max_change < minimum_team_maximum:
+            form.add_error('max_members', error=forms.ValidationError(
+                "Choose a larger maximum size, or remove students from the largest team, {}, with {} members.".format(largest_team_name, minimum_team_maximum)))
+            return super().form_invalid(form)
+
+        # Attempt to change the team parameters.
+        # Attempt to change the team parameters.
+        # Attempt to change the team parameters.
+
+        # Development snipped below.
         form.add_error('max_members', error=forms.ValidationError(
-            "Cannot be lower than 19"))
+            "Form under development."))
         return super().form_invalid(form)
-
+        # Development snippet above.
         return super().form_valid(form)
 
     def get_context_data(self, *args, **kwargs):
