@@ -18,26 +18,37 @@ class LandingView(LoginRequiredMixin, generic.TemplateView):
         context = super(LandingView, self).get_context_data(*args, **kwargs)
         context['message'] = 'Welcome to the homepage for the InFlux TMS.'
         context['user_section_info'] = self.get_user_section_info()
-        self.add_students_without_teams_to_context_by_course(context)
+        context['instructor_data'] = self.get_instructor_team_data()
         return context
 
     def get_user_section_info(self):
         pass
 
-    def add_students_without_teams_to_context_by_course(self, context):
+    def get_instructor_team_data(self):
         try:
             self.request.user.instructor
         except Instructor.DoesNotExist:
-            return None 
+            return None
 
         user = InfluxUser.objects.get(id=self.request.user.id)
         sections = user.instructor.instructing_sections.all()
+        structure = []
 
         for section in sections:
             teams = Team.objects.filter(section=section)
-            students = Student.objects.filter(course_sections=section).exclude(teams__in=teams).distinct()
-            context[ 'no_team_{}'.format(section.course.course_code ,section.section_code) ] = students
+            no_team = Student.objects.filter(
+                course_sections=section).exclude(teams__in=teams).distinct()
+            section_structure = {
+                'name': "{}-{}".format(section.course.course_code, section.section_code),
+                'section': section,
+                'teams': teams,
+                'not_in_team': no_team,
+            }
 
+            print(section_structure)
+            structure.append(dict(section_structure))
+
+        return structure
 
 
 class LoginView(generic.FormView):

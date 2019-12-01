@@ -12,37 +12,35 @@
     {% endfor %}
 </ol>
 
-<b>Students, Teams, Sections:</b>
+<b>Sections, Teams, Students:</b>
 
 <ol>
-    {% for section in user.instructor.instructing_sections.all %}
+    {% for blob in instructor_data %}
     <li>
-        <b>{{ section.course.course_code }}-{{ section.section_code }}</b>
+        <b>{{blob.name}}</b>
         <br>Teams:
         <ol>
-            {% for team in section.team_set.all %}
-            <li><b>{{ team.team_name  }}</b>
-                {% if team.student_set.count > 0 %}
-                <br>Students:
-                <ol>
-                    {% for student in team.student_set.all %}
-                    <li>{{ student.user.first_and_given_name }}</li>
-                    {% endfor %}
-
-                </ol>
-                {% else %}
-                <br>Team is empty.
-                {% endif %}
-            </li>
+            {% for team in blob.teams %}
+            <li><a href="{% url 'tms:teaminfo' team.id %}">{{team.team_name}}</a></li>
+            <ul>
+                {% for student in team.student_set.all %}
+                <li>{{student.user.first_and_given_name}}</li>
+                {% endfor %}
+            </ul>
             {% endfor %}
 
         </ol>
-        <br>No Team:
+
+        {% if blob.not_in_team.count > 0 %}
+        <br>Students Without a Team:
         <ol>
-            {% for student in students_without_team %}
-            <li>{{ student.user.first_and_given_name }}</li>
+            {% for student in blob.not_in_team %}
+            <li>{{student.user.first_and_given_name}}</li>
             {% endfor %}
+
         </ol>
+        {% endif %}
+        <br />
     </li>
     {% endfor %}
 </ol>
