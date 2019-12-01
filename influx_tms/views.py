@@ -194,6 +194,7 @@ class CourseDetailView(generic.DetailView):
 class CourseSetupView(generic.FormView):
     form_class = CourseSetupForm
     template_name = "tms/coursesetup.html"
+    success_url = '/tms/landing'
 
     def get(self, request, *args, **kwargs):
 
@@ -202,6 +203,7 @@ class CourseSetupView(generic.FormView):
             return HttpResponseRedirect('/tms/landing')
 
         # Check if the course exists.
+        course = None
         try:
             course = Course.objects.get(id=self.kwargs['pk'])
         except InfluxUser.DoesNotExist:
@@ -220,7 +222,6 @@ class CourseSetupView(generic.FormView):
         return kwargs
 
     def form_valid(self, form):
-
         # Objects we need to validate this form.
         instructor = InfluxUser.objects.get(id=self.request.user.id).instructor
         course = None
@@ -252,6 +253,7 @@ class CourseSetupView(generic.FormView):
         for section in sections:
             teams += Team.objects.filter(section=section)
 
+        # Find minimum max_team_size
         minimum_team_maximum = 0
         largest_team_name = ""
         for team in teams:
@@ -267,15 +269,26 @@ class CourseSetupView(generic.FormView):
             return super().form_invalid(form)
 
         # Attempt to change the team parameters.
-        # Attempt to change the team parameters.
-        # Attempt to change the team parameters.
+        self.update_team_information(
+            teams=teams,
+            max_members=form.cleaned_data['max_members'],
+            min_members=form.cleaned_data['min_members'],
+            formation_deadline=form.cleaned_data['date']
+        )
 
-        # Development snipped below.
-        form.add_error('max_members', error=forms.ValidationError(
-            "Form under development."))
-        return super().form_invalid(form)
-        # Development snippet above.
+        self.success_url = "/tms/info/course/{}".format(course.id)
+        print("Will redirect to {}".format(self.success_url))
         return super().form_valid(form)
+
+    def update_team_information(self, teams, max_members, min_members, formation_deadline):
+        for team in teams:
+            print("Updating " + str(team))
+            # Update maximum members
+            team.max_students = max_members
+            team.min_students = min_members
+            team.formation_deadline = formation_deadline
+            team.save()
+        pass
 
     def get_context_data(self, *args, **kwargs):
         context = super(CourseSetupView, self).get_context_data(
