@@ -1,7 +1,7 @@
 # users/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import InfluxUser, Course
+from .models import InfluxUser, Course, Student
 from django.db import transaction
 
 import datetime
@@ -47,9 +47,6 @@ class RegistrationForm(forms.Form):
         return cleaned_data
 
 
-############################################################
-############################################################
-
 class CourseSetupForm(forms.Form):
     course = forms.CharField(label='static')
 
@@ -84,8 +81,6 @@ class CourseSetupForm(forms.Form):
                 label="Maximum Team Members", initial=max_team_members)
 
 
-############################################################
-
 class LoginForm(forms.Form):
     user_id = forms.CharField(
         label='User ID', max_length=20, initial="8276723")
@@ -116,3 +111,28 @@ class InfluxUserUpdateForm(UserChangeForm):
     class Meta:
         model = InfluxUser
         fields = ('user_id', 'first_and_given_name', 'email')
+
+
+###############################################################################
+###############################################################################
+
+class TeamCreationForm(forms.Form):
+    team_name = forms.CharField(label='Team Name')
+    teammates = forms.ModelMultipleChoiceField(label='Teammates', queryset=Student.objects.all())
+
+    def clean(self):
+        cleaned_data = super(TeamCreationForm, self).clean()
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+
+        section_name = kwargs.pop('section_name')
+        section = kwargs.pop('section')
+        student = kwargs.pop('student')
+        context = super(TeamCreationForm, self).__init__(
+            *args, **kwargs)
+        
+        # The form can only show students that are in the same section,
+        #  and are not in another team.
+        self.fields['teammates'].queryset = Student.objects.filter(
+            course_sections=section).exclude(user=student.user)

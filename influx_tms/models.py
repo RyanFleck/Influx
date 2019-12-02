@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Q
+import datetime
 
 from django.contrib.auth.models import AbstractUser
 
@@ -18,6 +19,12 @@ class Course(models.Model):
     institution = models.ForeignKey(
         Institution, blank=True, null=True, on_delete=models.SET_NULL)
     course_code = models.CharField(max_length=200)
+    
+    min_student_default = models.IntegerField(default=0)
+    max_student_default = models.IntegerField(default=4)
+    creation_deadline_default = models.DateTimeField(
+        'creation deadline default', blank=True,
+        default=datetime.date.today()+datetime.timedelta(days=+30))
 
     def __str__(self):
         return self.course_code

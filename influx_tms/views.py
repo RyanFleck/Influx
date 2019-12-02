@@ -8,7 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import InfluxUser, Student, Instructor, Institution, Course, Section, Team
-from .forms import RegistrationForm, LoginForm, CourseSetupForm
+from .forms import RegistrationForm, LoginForm, CourseSetupForm, TeamCreationForm
 
 
 class LandingView(LoginRequiredMixin, generic.TemplateView):
@@ -331,6 +331,10 @@ class CourseSetupView(generic.FormView):
             return super().form_invalid(form)
 
         # Attempt to change the team parameters.
+        course.min_student_default = form.cleaned_data['min_members']
+        course.max_student_default = form.cleaned_data['max_members']
+        course.creation_deadline_default = form.cleaned_data['date']
+        course.save()
         self.update_team_information(
             teams=teams,
             max_members=form.cleaned_data['max_members'],
@@ -388,22 +392,69 @@ class TeamDetailView(generic.DetailView):
     context_object_name = 'team'
 
 
-class TeamCreateView(generic.CreateView):
-    model = Team
-    template_name = 'tms/forms/createteam.html'
-    fields = ('team_name', 'pending_students')
-    success_url = '/'
+###############################################################################
+###############################################################################
+###############################################################################
+
+class TeamCreationFormView(generic.FormView):
+    form_class = TeamCreationForm
+    template_name = "tms/teamcreation.html"
+    success_url = '/tms/landing'
 
     def get(self, request, *args, **kwargs):
-        self.sectionid = kwargs['pk']
-        return super().get(request, *args, **kwargs)
-        sec = Section.objects.get(id=self.sectionid)
 
-        self.fields['pending_students'].queryset = Student.objects.filter(
-            section=sec).exclude(user=request.user)
+        # Ensure that the user is a student.
+        if not request.user.student:
+            return HttpResponseRedirect('/tms/landing')
+
+        try:
+            Section.objects.get(id=self.kwargs['pk'])
+        except Section.DoesNotExist:
+            return HttpResponseRedirect('/tms/landing')
+
+        return super(TeamCreationFormView, self).get(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(TeamCreationFormView, self).get_form_kwargs()
+        section = Section.objects.get(id=self.kwargs['pk'])
+        kwargs['section_name'] = "{}".format(str(section))
+        kwargs['section'] = section
+        kwargs['student'] = Student.objects.get(user=self.request.user)
+        return kwargs
 
     def form_valid(self, form):
-        # Validate that the course exists
+        
+        section = Section.objects.get(id=self.kwargs['pk'])
+        liasion = Student.objects.get(user=self.request.user)
+        teammates = form.cleaned_data['teammates']
+
+        for mate in teammates:
+            print(mate)
+
+        self.success_url = "/tms/info/section/{}".format(section.id)
+        print("Will redirect to {}".format(self.success_url))
+
         form.add_error('team_name', error=forms.ValidationError(
-            "Form under development."))
+            "Form in development."))
         return super().form_invalid(form)
+
+        return super().form_valid(form)
+
+    def update_team_information(self, teams, max_members, min_members, formation_deadline):
+        for team in teams:
+            print("Updating " + str(team))
+            # Update maximum members
+            team.max_students = max_members
+            team.min_students = min_members
+            team.formation_deadline = formation_deadline
+            team.save()
+        pass
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(TeamCreationFormView, self).get_context_data(
+            *args, **kwargs)
+
+        section = Section.objects.get(id=self.kwargs['pk'])
+        context['section'] = "{}".format(str(section))
+
+        return context

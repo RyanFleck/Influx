@@ -17,7 +17,7 @@ urlpatterns = [
     path('tms/info/team/<int:pk>/',
          views.TeamDetailView.as_view(), name='teaminfo'),
     path('tms/info/section/<int:pk>/createteam/',
-         views.TeamCreateView.as_view(), name='createteam'),
+         views.TeamCreationFormView.as_view(), name='createteam'),
     path('tms/info/section/<int:pk>/',
          views.SectionDetailView.as_view(), name='sectioninfo'),
     path('accounts/', include('django.contrib.auth.urls')),

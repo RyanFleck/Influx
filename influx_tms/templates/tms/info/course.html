@@ -4,7 +4,13 @@
 <h1>{{course.course_code}}</h1>
 
 {% if user.instructor %}
-<a href="{% url 'tms:coursesetup' course.id %}">Modify course settings</a>
+<b>Instructor Controls:</b>
+<br><a href="{% url 'tms:coursesetup' course.id %}">Modify course settings</a>
+<p>Team Parameters:
+    <br>Min Team Size: {{ course.min_student_default }}
+    <br>Max Team Size: {{ course.max_student_default }}
+    <br>Team Creation Deadline: {{ course.creation_deadline_default }}
+</p>
 {% endif %}
 
 <h3>All Students</h3>
