@@ -118,7 +118,8 @@ class InfluxUserUpdateForm(UserChangeForm):
 
 class TeamCreationForm(forms.Form):
     team_name = forms.CharField(label='Team Name')
-    teammates = forms.ModelMultipleChoiceField(label='Teammates', queryset=Student.objects.all())
+    teammates = forms.ModelMultipleChoiceField(
+        label='Teammates', queryset=Student.objects.all(), required=False)
 
     def clean(self):
         cleaned_data = super(TeamCreationForm, self).clean()
@@ -131,8 +132,18 @@ class TeamCreationForm(forms.Form):
         student = kwargs.pop('student')
         context = super(TeamCreationForm, self).__init__(
             *args, **kwargs)
-        
+
         # The form can only show students that are in the same section,
         #  and are not in another team.
-        self.fields['teammates'].queryset = Student.objects.filter(
+        students_without_a_team = Student.objects.filter(
             course_sections=section).exclude(user=student.user)
+
+        teams = section.team_set.all()
+        # Remove students in teams
+        for student in students_without_a_team:
+            for team in teams:
+                if team.student_set.filter(user=student.user).exists():
+                    students_without_a_team = students_without_a_team.exclude(
+                        user=student.user)
+
+        self.fields['teammates'].queryset = students_without_a_team

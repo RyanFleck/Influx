@@ -3,6 +3,11 @@
 
 <h1>Create Team for {{ section }}</h1>
 
+<p>Minimum students in a team: {{ section.course.min_student_default }}
+<br>Maximum students in a team: {{ section.course.max_student_default }}
+<br>Creation deadline: {{ section.course.creation_deadline_default }}
+</p>
+
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}

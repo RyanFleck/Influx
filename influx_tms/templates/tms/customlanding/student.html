@@ -9,7 +9,7 @@
         {% if section.inteam %}
         in team <a href="{% url 'tms:teaminfo' section.team.id %}">{{ section.teamName }}</a>
         {% else %}
-        not in team, <a href="">create</a> or <a href="">join</a> a team.
+        not in team, <a href="{% url 'tms:createteam' section.section.id %}">create</a> or <a href="">join</a> a team.
         {% endif %}
 
     </li>

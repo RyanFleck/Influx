@@ -4,7 +4,7 @@
 <h1>{{ team.team_name }}</h1>
 
 <p><b>Member Stats:</b> Max:{{ team.max_students }} Min:{{ team.min_students }} Current:{{ team.student_set.count }}</p>
-
+<p><b>Liasion:</b> {{ team.liasion }}</p>
 <h3>Members</h3>
 <ol>
 {% for student in team.student_set.all %}

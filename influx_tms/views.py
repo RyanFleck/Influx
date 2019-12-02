@@ -428,33 +428,67 @@ class TeamCreationFormView(generic.FormView):
         liasion = Student.objects.get(user=self.request.user)
         teammates = form.cleaned_data['teammates']
 
+        print("ALRIGHT LETS PROCESS THIS FUCKING BITCH")
+        print("Creating new team {} with liasion {} and students {}".format(
+            form.cleaned_data['team_name'],
+            liasion,
+            teammates 
+        ))
+
+        # Ensure all teammates are available to be placed in a team.
+        students_without_a_team = Student.objects.filter(
+            course_sections=section)
+        teams = section.team_set.all()
+        # Remove students in teams
+        for student in students_without_a_team:
+            for team in teams:
+                if team.student_set.filter(user=student.user).exists():
+                    students_without_a_team = students_without_a_team.exclude(
+                        user=student.user)
+
         for mate in teammates:
-            print(mate)
+            if (mate not in students_without_a_team):
+                form.add_error('team_name', error=forms.ValidationError(
+                    "Form in development."))
+                return super().form_invalid(form)
 
-        self.success_url = "/tms/info/section/{}".format(section.id)
-        print("Will redirect to {}".format(self.success_url))
+        if liasion not in students_without_a_team:
+            form.add_error('team_name', error=forms.ValidationError(
+                "You are already in a team!"))
+            return super().form_invalid(form)
 
-        form.add_error('team_name', error=forms.ValidationError(
-            "Form in development."))
-        return super().form_invalid(form)
+        # Ensure the name is not a duplicate.
+
+        # Create the team
+        newteam = Team.objects.create(
+            section=section,
+            liasion=liasion,
+            team_name=form.cleaned_data['team_name'],
+            formation_deadline=section.course.creation_deadline_default,
+            min_students=section.course.min_student_default,
+            max_students=section.course.max_student_default,
+        )
+        newteam.save()
+
+        for mate in teammates:
+            mate.teams.add(newteam)
+            mate.save()
+        
+        liasion.teams.add(newteam)
+        liasion.save()
+
+
+        #self.success_url = "/tms/info/section/{}".format(section.id)
+        #print("Will redirect to {}".format(self.success_url))
+
 
         return super().form_valid(form)
-
-    def update_team_information(self, teams, max_members, min_members, formation_deadline):
-        for team in teams:
-            print("Updating " + str(team))
-            # Update maximum members
-            team.max_students = max_members
-            team.min_students = min_members
-            team.formation_deadline = formation_deadline
-            team.save()
-        pass
 
     def get_context_data(self, *args, **kwargs):
         context = super(TeamCreationFormView, self).get_context_data(
             *args, **kwargs)
 
         section = Section.objects.get(id=self.kwargs['pk'])
-        context['section'] = "{}".format(str(section))
+        context['section'] = section
 
         return context
