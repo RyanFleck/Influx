@@ -3,6 +3,24 @@
 
 <h1>{{ section.course.course_code }}-{{ section.section_code }}</h1>
 
+{% if user.student %}
+<a href="{% url 'tms:createteam' section.id %}">Create a team</a>
+<a href="/">Join a team</a>
+{% endif %}
+
+<h3>Teams</h3>
+<ol>
+    {% for team in section.team_set.all %}
+    <li><b>{{ team.team_name }}</b>
+        <br>Students:
+        <ol>
+            {% for student in team.student_set.all %}
+            <li>{{ student.user.first_and_given_name }}</li>
+            {% endfor %}
+        </ol>
+    </li>
+    {% endfor %}
+</ol>
 
 <h3>Students</h3>
 <ol>

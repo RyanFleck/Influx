@@ -16,6 +16,8 @@ urlpatterns = [
          views.CourseSetupView.as_view(), name='coursesetup'),
     path('tms/info/team/<int:pk>/',
          views.TeamDetailView.as_view(), name='teaminfo'),
+    path('tms/info/section/<int:pk>/createteam/',
+         views.TeamCreateView.as_view(), name='createteam'),
     path('tms/info/section/<int:pk>/',
          views.SectionDetailView.as_view(), name='sectioninfo'),
     path('accounts/', include('django.contrib.auth.urls')),

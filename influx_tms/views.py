@@ -345,3 +345,24 @@ class TeamDetailView(generic.DetailView):
     model = Team
     template_name = 'tms/info/team.html'
     context_object_name = 'team'
+
+
+class TeamCreateView(generic.CreateView):
+    model = Team
+    template_name = 'tms/forms/createteam.html'
+    fields = ('team_name', 'pending_students')
+    success_url = '/'
+    
+    def get(self, request, *args, **kwargs):
+        self.sectionid = kwargs['pk']
+        return super().get(request, *args, **kwargs)
+        sec = Section.objects.get(id=self.sectionid)
+
+        self.fields['pending_students'].queryset = Student.objects.filter(section=sec).exclude(user=request.user)
+
+
+    def form_valid(self, form):
+        # Validate that the course exists
+        form.add_error('team_name', error=forms.ValidationError(
+            "Form under development."))
+        return super().form_invalid(form)

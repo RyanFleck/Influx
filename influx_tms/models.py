@@ -43,6 +43,8 @@ class Team(models.Model):
 
     min_students = models.IntegerField(default=0)
     max_students = models.IntegerField(default=4)
+    
+    pending_students = models.ManyToManyField('Student', related_name='pending_students', blank=True)
 
     def save(self, *args, **kwargs):
         print("Saving team...")
