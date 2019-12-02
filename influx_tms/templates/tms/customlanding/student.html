@@ -3,8 +3,16 @@
 <h3>Courses:</h3>
 
 <ol>
-    {% for section in user.student.course_sections.all %}
-    <li>{{ section.course.course_code }}-{{ section.section_code }}</li>
+    {% for section in student_data %}
+    <li>
+        <a href="{% url 'tms:sectioninfo' section.section.id %}">{{ section.name }}</a>
+        {% if section.inteam %}
+        in team <a href="{% url 'tms:teaminfo' section.team.id %}">{{ section.teamName }}</a>
+        {% else %}
+        not in team, <a href="">create</a> or <a href="">join</a> a team.
+        {% endif %}
+
+    </li>
     {% endfor %}
 </ol>
 

@@ -17,12 +17,53 @@ class LandingView(LoginRequiredMixin, generic.TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super(LandingView, self).get_context_data(*args, **kwargs)
         context['message'] = 'Welcome to the homepage for the InFlux TMS.'
-        context['user_section_info'] = self.get_user_section_info()
+        context['student_data'] = self.get_student_team_data()
         context['instructor_data'] = self.get_instructor_team_data()
         return context
 
-    def get_user_section_info(self):
+    def get_student_team_data(self):
+        try:
+            self.request.user.student
+        except Student.DoesNotExist:
+            return None
         pass
+
+        user = InfluxUser.objects.get(id=self.request.user.id)
+        sections = user.student.course_sections.all()
+        structure = []
+
+        for section in sections:
+            teams = Team.objects.filter(section=section)
+            in_a_team = False
+            for team in teams:
+                if team.student_set.filter(user=user):
+                    print("In team " + str(team))
+                    in_a_team = True
+
+                    section_structure = {
+                        'name': "{}-{}".format(section.course.course_code, section.section_code),
+                        'section': section,
+                        'inteam': in_a_team,
+                        'teamName': team.team_name,
+                        'team': team
+                    }
+
+                    print(section_structure)
+                    structure.append(dict(section_structure))
+                    break
+
+            if not in_a_team:
+                section_structure = {
+                    'name': "{}-{}".format(section.course.course_code, section.section_code),
+                    'section': section,
+                    'inteam': in_a_team,
+                    'teamName': ""
+                }
+
+                print(section_structure)
+                structure.append(dict(section_structure))
+
+        return structure
 
     def get_instructor_team_data(self):
         try:
@@ -352,14 +393,14 @@ class TeamCreateView(generic.CreateView):
     template_name = 'tms/forms/createteam.html'
     fields = ('team_name', 'pending_students')
     success_url = '/'
-    
+
     def get(self, request, *args, **kwargs):
         self.sectionid = kwargs['pk']
         return super().get(request, *args, **kwargs)
         sec = Section.objects.get(id=self.sectionid)
 
-        self.fields['pending_students'].queryset = Student.objects.filter(section=sec).exclude(user=request.user)
-
+        self.fields['pending_students'].queryset = Student.objects.filter(
+            section=sec).exclude(user=request.user)
 
     def form_valid(self, form):
         # Validate that the course exists
