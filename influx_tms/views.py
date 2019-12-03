@@ -550,6 +550,11 @@ def add_to_team(request, studentid, teamid):
         except:
             print("Failed to fetch objects.")
 
+        # TODO: Tons of additional checks need to be made here.
+        # Check if student is in any other teams in this section.
+        # Check if requestor is liasion for this team.
+        # Only show buttons to liasion.
+
         team.pending_students.remove(add_student)
         add_student.teams.add(team)
 
