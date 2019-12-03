@@ -30,8 +30,36 @@
 <h3>Students in Teams</h3>
 <ol>
     {% for pair in student_team_pairs %}
-    <li>{{ pair.student.user.first_and_given_name }} in team {{ pair.team.team_name}}</li>
+    <li>{{ pair.student.user.first_and_given_name }} in team <a
+            href="{% url 'tms:teaminfo' pair.team.id %}">{{ pair.team.team_name}}</a></li>
     {% endfor %}
 </ol>
+
+<h3>Sections, Teams, Students</h3>
+<ol>
+    {% for section in course.section_set.all %}
+    <li>
+        <a href="{% url 'tms:sectioninfo' section.id %}">{{ section }}</a>
+        <ol>
+            {% for team in section.team_set.all %}
+            <li>
+                <a href="{% url 'tms:teaminfo' team.id %}">{{ team }}</a>
+        {% if team.student_set.count > 0 %}
+                <ol>
+                    {% for student in team.student_set.all %}
+                    <li>{{student}}</li>
+                    {% endfor %}
+                </ol>
+                {% else %}
+                <br>Empty team.
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ol>
+        <br />
+    </li>
+    {% endfor %}
+</ol>
+
 
 {% endblock %}

@@ -1,7 +1,7 @@
 # users/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from .models import InfluxUser, Course, Student
+from .models import InfluxUser, Course, Student, Team
 from django.db import transaction
 
 import datetime
@@ -113,8 +113,6 @@ class InfluxUserUpdateForm(UserChangeForm):
         fields = ('user_id', 'first_and_given_name', 'email')
 
 
-###############################################################################
-###############################################################################
 
 class TeamCreationForm(forms.Form):
     team_name = forms.CharField(label='Team Name')
@@ -147,3 +145,27 @@ class TeamCreationForm(forms.Form):
                         user=student.user)
 
         self.fields['teammates'].queryset = students_without_a_team
+
+
+###############################################################################
+###############################################################################
+
+class TeamJoinForm(forms.Form):
+    team = forms.ModelChoiceField(label='Join Team', queryset=Team.objects.all())
+
+    def clean(self):
+        cleaned_data = super(TeamJoinForm, self).clean()
+
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+
+        section_name = kwargs.pop('section_name')
+        section = kwargs.pop('section')
+        student = kwargs.pop('student')
+        context = super(TeamJoinForm, self).__init__(
+            *args, **kwargs)
+        
+        filtered_teams = Team.objects.filter(section=section)
+
+        self.fields['team'].queryset = filtered_teams 

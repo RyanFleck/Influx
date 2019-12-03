@@ -4,12 +4,13 @@
 
 <ol>
     {% for section in student_data %}
-    <li>
-        <a href="{% url 'tms:sectioninfo' section.section.id %}">{{ section.name }}</a>
+    <li><a href="{% url 'tms:courseinfo' section.section.course.id %}">{{ section.section.course }}</a>-<a
+            href="{% url 'tms:sectioninfo' section.section.id %}">{{ section.section.section_code}}</a>
         {% if section.inteam %}
         in team <a href="{% url 'tms:teaminfo' section.team.id %}">{{ section.teamName }}</a>
         {% else %}
-        not in team, <a href="{% url 'tms:createteam' section.section.id %}">create</a> or <a href="">join</a> a team.
+        not in team, <a href="{% url 'tms:createteam' section.section.id %}">create</a> or
+        <a href="{% url 'tms:jointeam' section.section.id %}">join</a> one.
         {% endif %}
 
     </li>

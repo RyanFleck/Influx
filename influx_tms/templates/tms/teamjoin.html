@@ -1,14 +1,8 @@
 {% extends "tms/base.html" %}
 {% block main %}
 
-<h1>{{ section.course.course_code }}-{{ section.section_code }}</h1>
-<p><a href="{% url 'tms:courseinfo' section.course.id %}">{{ section.course }} Course Overview</a></p>
-{% if user.student %}
-<a href="{% url 'tms:createteam' section.id %}">Create a team</a>
-<a href="{% url 'tms:jointeam' section.id %}">Join a team</a>
-{% endif %}
+<h1>Join Team in {{ section }}</h1>
 
-<h3>Teams</h3>
 <ol>
     {% for team in section.team_set.all %}
     <li><b><a href="{% url 'tms:teaminfo' team.id %}">{{ team.team_name }}</a></b>
@@ -30,11 +24,10 @@
     {% endfor %}
 </ol>
 
-<h3>Students</h3>
-<ol>
-    {% for student in section.student_set.all %}
-    <li>{{ student.user.first_and_given_name }}</li>
-    {% endfor %}
-</ol>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Request to Join">
+</form>
 
 {% endblock %}

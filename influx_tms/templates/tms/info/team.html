@@ -5,10 +5,25 @@
 
 <p><b>Member Stats:</b> Max:{{ team.max_students }} Min:{{ team.min_students }} Current:{{ team.student_set.count }}</p>
 <p><b>Liasion:</b> {{ team.liasion }}</p>
+<p><b>Section:</b> <a href="{% url 'tms:sectioninfo' team.section.id %}">{{ team.section }}</a></p>
+
 <h3>Members</h3>
 <ol>
 {% for student in team.student_set.all %}
 <li>{{ student.user.first_and_given_name }}</li>
+{% endfor %}
+</ol>
+
+<h3>Pending Members</h3>
+<ol>
+{% for student in team.pending_students.all %}
+<li>{{ student.user.first_and_given_name }} 
+
+            <form id="add-to-team" method="POST" action="{% url 'tms:add-to-team' student.user.id team.id %}">
+                {% csrf_token %}
+                <input type="submit" class="logout-button" value="Accept">
+            </form>
+</li>
 {% endfor %}
 </ol>
 {% endblock %}

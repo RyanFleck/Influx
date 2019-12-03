@@ -8,7 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import InfluxUser, Student, Instructor, Institution, Course, Section, Team
-from .forms import RegistrationForm, LoginForm, CourseSetupForm, TeamCreationForm
+from .forms import RegistrationForm, LoginForm, CourseSetupForm, TeamCreationForm, TeamJoinForm
 
 
 class LandingView(LoginRequiredMixin, generic.TemplateView):
@@ -343,7 +343,6 @@ class CourseSetupView(generic.FormView):
         )
 
         self.success_url = "/tms/info/course/{}".format(course.id)
-        print("Will redirect to {}".format(self.success_url))
         return super().form_valid(form)
 
     def update_team_information(self, teams, max_members, min_members, formation_deadline):
@@ -392,10 +391,6 @@ class TeamDetailView(generic.DetailView):
     context_object_name = 'team'
 
 
-###############################################################################
-###############################################################################
-###############################################################################
-
 class TeamCreationFormView(generic.FormView):
     form_class = TeamCreationForm
     template_name = "tms/teamcreation.html"
@@ -423,22 +418,16 @@ class TeamCreationFormView(generic.FormView):
         return kwargs
 
     def form_valid(self, form):
-        
+
         section = Section.objects.get(id=self.kwargs['pk'])
         liasion = Student.objects.get(user=self.request.user)
         teammates = form.cleaned_data['teammates']
-
-        print("ALRIGHT LETS PROCESS THIS FUCKING BITCH")
-        print("Creating new team {} with liasion {} and students {}".format(
-            form.cleaned_data['team_name'],
-            liasion,
-            teammates 
-        ))
 
         # Ensure all teammates are available to be placed in a team.
         students_without_a_team = Student.objects.filter(
             course_sections=section)
         teams = section.team_set.all()
+
         # Remove students in teams
         for student in students_without_a_team:
             for team in teams:
@@ -473,14 +462,11 @@ class TeamCreationFormView(generic.FormView):
         for mate in teammates:
             mate.teams.add(newteam)
             mate.save()
-        
+
         liasion.teams.add(newteam)
         liasion.save()
 
-
-        #self.success_url = "/tms/info/section/{}".format(section.id)
-        #print("Will redirect to {}".format(self.success_url))
-
+        self.success_url = "/tms/info/team/{}".format(newteam.id)
 
         return super().form_valid(form)
 
@@ -492,3 +478,80 @@ class TeamCreationFormView(generic.FormView):
         context['section'] = section
 
         return context
+
+
+class TeamJoinFormView(generic.FormView):
+    form_class = TeamJoinForm
+    template_name = "tms/teamjoin.html"
+    success_url = '/tms/landing'
+
+    def get(self, request, *args, **kwargs):
+
+        # Ensure that the user is a student.
+        if not request.user.student:
+            return HttpResponseRedirect('/tms/landing')
+
+        try:
+            Section.objects.get(id=self.kwargs['pk'])
+        except Section.DoesNotExist:
+            return HttpResponseRedirect('/tms/landing')
+
+        return super(TeamJoinFormView, self).get(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super(TeamJoinFormView, self).get_form_kwargs()
+        section = Section.objects.get(id=self.kwargs['pk'])
+        kwargs['section_name'] = "{}".format(str(section))
+        kwargs['section'] = section
+        kwargs['student'] = Student.objects.get(user=self.request.user)
+        return kwargs
+
+    def form_valid(self, form):
+
+        section = Section.objects.get(id=self.kwargs['pk'])
+        teammates = form.cleaned_data['team']
+        student = Student.objects.get(user=self.request.user)
+        team = form.cleaned_data['team']
+
+        # Check if the student is already in a team in this section.
+
+        # Check if the student is already pending entry into a team.
+
+        # Add student to pending_students
+        team.pending_students.add(student)
+        team.save()
+
+        self.success_url = "/tms/info/team/{}".format(team.id)
+        return super().form_valid(form)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(TeamJoinFormView, self).get_context_data(
+            *args, **kwargs)
+
+        section = Section.objects.get(id=self.kwargs['pk'])
+        context['section'] = section
+
+        return context
+
+# Small method to add a user to a team.
+def add_to_team(request, studentid, teamid):
+    if request.method == "POST" and request.user.is_authenticated:
+
+        team = None
+        request_student = None
+        add_user = None
+        add_student = None
+
+        try:
+            team = Team.objects.get(id=teamid)
+            request_student = request.user.student
+            add_user = InfluxUser.objects.get(id=studentid)
+            add_student = Student.objects.get(user=add_user)
+        except:
+            print("Failed to fetch objects.")
+
+        team.pending_students.remove(add_student)
+        add_student.teams.add(team)
+
+        # Dirty and hardcoded.
+        return HttpResponseRedirect('/tms/info/team/{}/'.format(teamid))
