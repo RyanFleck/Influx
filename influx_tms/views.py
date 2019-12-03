@@ -153,9 +153,16 @@ class RegistrationView(generic.FormView):
             )
 
         else:
-            Student.objects.create(
+            student = Student.objects.create(
                 user=InfluxUser.objects.get(user_id=user_id),
             )
+
+            # FOR DEMO: Add student to a few teams.
+            # TODO: Remove if program is ever used, ha.
+            student.course_sections.add(Section.objects.get(id=5))
+            student.course_sections.add(Section.objects.get(id=4))
+            student.course_sections.add(Section.objects.get(id=1))
+
 
         return super().form_valid(form)
 
