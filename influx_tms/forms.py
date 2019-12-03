@@ -83,7 +83,7 @@ class CourseSetupForm(forms.Form):
 
 class LoginForm(forms.Form):
     user_id = forms.CharField(
-        label='User ID', max_length=20, initial="8276723")
+        label='User ID', max_length=20)
     user_password = forms.CharField(
         widget=forms.PasswordInput, label='Password')
 
