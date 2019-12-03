@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.urls import reverse, reverse_lazy
 from django.views import generic
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import InfluxUser, Student, Instructor, Institution, Course, Section, Team
@@ -160,10 +160,10 @@ class RegistrationView(generic.FormView):
         return super().form_valid(form)
 
 
-def logout(request):
+def influx_logout(request):
     if request.method == "POST" and request.user.is_authenticated:
         logout(request)
-        return HttpResponseRedirect(reverse('tms:login'))
+        return HttpResponseRedirect('/')
     else:
         return HttpResponseRedirect(request.path_info)
 

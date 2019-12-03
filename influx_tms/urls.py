@@ -6,6 +6,8 @@ from . import views
 app_name = 'tms'
 urlpatterns = [
     path('', views.LoginView.as_view(), name='login'),
+    path('logout/', views.influx_logout, name='logout'),
+
     path('register/', views.RegistrationView.as_view(), name='registration'),
     path('tms/landing/', views.LandingView.as_view(), name='landing'),
     path('tms/info/', views.InfoView.as_view(), name='info'),
@@ -22,6 +24,5 @@ urlpatterns = [
     path('tms/info/section/<int:pk>/',
          views.SectionDetailView.as_view(), name='sectioninfo'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('logout/', views.logout, name='logout'),
     path('add_to_team/<int:studentid>/<int:teamid>', views.add_to_team, name='add-to-team'),
 ]
