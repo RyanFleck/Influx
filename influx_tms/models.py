@@ -93,6 +93,8 @@ class Student(models.Model):
     user = models.OneToOneField(
         InfluxUser, on_delete=models.CASCADE, primary_key=True)
 
+    program_of_study = models.CharField(max_length=50, null=True, blank=True)
+
     teams = models.ManyToManyField(Team)
     course_sections = models.ManyToManyField(Section)
 
