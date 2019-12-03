@@ -1,11 +1,11 @@
 {% if user.student %}
 
-<h3>Courses:</h3>
+<h3>Your Courses:</h3>
 
 <ol>
     {% for section in student_data %}
     <li><a href="{% url 'tms:courseinfo' section.section.course.id %}">{{ section.section.course }}</a>-<a
-            href="{% url 'tms:sectioninfo' section.section.id %}">{{ section.section.section_code}}</a>
+            href="{% url 'tms:sectioninfo' section.section.id %}"><b>{{ section.section.section_code}}</b></a>
         {% if section.inteam %}
         in team <a href="{% url 'tms:teaminfo' section.team.id %}">{{ section.teamName }}</a>
         {% else %}

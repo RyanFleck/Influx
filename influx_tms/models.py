@@ -53,6 +53,13 @@ class Team(models.Model):
     
     pending_students = models.ManyToManyField('Student', related_name='pending_students', blank=True)
 
+    STATUS_CHOICES = (
+        ("INCOMPLETE","Incomplete"),
+        ("COMPLETE","Complete"),
+    )
+
+    team_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="INCOMPLETE")
+
     def save(self, *args, **kwargs):
         print("Saving team...")
         # TODO: Set first member as liasion.
