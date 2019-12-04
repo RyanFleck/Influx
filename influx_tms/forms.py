@@ -113,7 +113,6 @@ class InfluxUserUpdateForm(UserChangeForm):
         fields = ('user_id', 'first_and_given_name', 'email')
 
 
-
 class TeamCreationForm(forms.Form):
     team_name = forms.CharField(label='Team Name')
     teammates = forms.ModelMultipleChoiceField(
@@ -151,7 +150,8 @@ class TeamCreationForm(forms.Form):
 ###############################################################################
 
 class TeamJoinForm(forms.Form):
-    team = forms.ModelChoiceField(label='Join Team', queryset=Team.objects.all())
+    team = forms.ModelChoiceField(
+        label='Join Team', queryset=Team.objects.all())
 
     def clean(self):
         cleaned_data = super(TeamJoinForm, self).clean()
@@ -165,7 +165,7 @@ class TeamJoinForm(forms.Form):
         student = kwargs.pop('student')
         context = super(TeamJoinForm, self).__init__(
             *args, **kwargs)
-        
+
         filtered_teams = Team.objects.filter(section=section)
 
-        self.fields['team'].queryset = filtered_teams 
+        self.fields['team'].queryset = filtered_teams

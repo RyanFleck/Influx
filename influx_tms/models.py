@@ -19,7 +19,7 @@ class Course(models.Model):
     institution = models.ForeignKey(
         Institution, blank=True, null=True, on_delete=models.SET_NULL)
     course_code = models.CharField(max_length=200)
-    
+
     min_student_default = models.IntegerField(default=0)
     max_student_default = models.IntegerField(default=4)
     creation_deadline_default = models.DateTimeField(
@@ -50,15 +50,17 @@ class Team(models.Model):
 
     min_students = models.IntegerField(default=0)
     max_students = models.IntegerField(default=4)
-    
-    pending_students = models.ManyToManyField('Student', related_name='pending_students', blank=True)
+
+    pending_students = models.ManyToManyField(
+        'Student', related_name='pending_students', blank=True)
 
     STATUS_CHOICES = (
-        ("INCOMPLETE","Incomplete"),
-        ("COMPLETE","Complete"),
+        ("INCOMPLETE", "Incomplete"),
+        ("COMPLETE", "Complete"),
     )
 
-    team_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="INCOMPLETE")
+    team_status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="INCOMPLETE")
 
     def save(self, *args, **kwargs):
         print("Saving team...")

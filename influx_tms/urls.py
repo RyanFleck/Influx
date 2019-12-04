@@ -24,5 +24,6 @@ urlpatterns = [
     path('tms/info/section/<int:pk>/',
          views.SectionDetailView.as_view(), name='sectioninfo'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('add_to_team/<int:studentid>/<int:teamid>', views.add_to_team, name='add-to-team'),
+    path('add_to_team/<int:studentid>/<int:teamid>',
+         views.add_to_team, name='add-to-team'),
 ]

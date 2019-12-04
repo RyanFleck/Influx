@@ -12,6 +12,12 @@ from .forms import RegistrationForm, LoginForm, CourseSetupForm, TeamCreationFor
 
 
 class LandingView(LoginRequiredMixin, generic.TemplateView):
+    """Landing Page View Controller
+
+    Fulfills Required Components:
+    - <<Screen>> LandingPage
+    """
+
     template_name = "tms/landing.html"
 
     def get_context_data(self, *args, **kwargs):
@@ -93,6 +99,13 @@ class LandingView(LoginRequiredMixin, generic.TemplateView):
 
 
 class LoginView(generic.FormView):
+    """Login Page View Controller
+
+    Fulfills Required Components:
+    - <<Screen>> Login
+    - <<Form>> LoginForm (see forms.py) 
+    """
+
     form_class = LoginForm
     template_name = "tms/login.html"
     success_url = reverse_lazy('tms:landing')
@@ -125,7 +138,12 @@ class LoginView(generic.FormView):
 
 
 class RegistrationView(generic.FormView):
-    '''RegistrationUI'''
+    """Registration Page View Controller
+
+    Fulfills Required Components:
+    - <<Screen>> Registration 
+    - <<Form>> RegistrationForm (see forms.py) 
+    """
 
     form_class = RegistrationForm
     template_name = "tms/registration.html"
@@ -163,28 +181,15 @@ class RegistrationView(generic.FormView):
             student.course_sections.add(Section.objects.get(id=4))
             student.course_sections.add(Section.objects.get(id=1))
 
-
         return super().form_valid(form)
 
 
-def influx_logout(request):
-    if request.method == "POST" and request.user.is_authenticated:
-        logout(request)
-        return HttpResponseRedirect('/')
-    else:
-        return HttpResponseRedirect(request.path_info)
-
-
-class InfoView(LoginRequiredMixin, generic.ListView):
-    template_name = "tms/info.html"
-    context_object_name = 'institutions'
-
-    def get_queryset(self):
-        return Institution.objects.order_by('name')
-
-
 class CourseDetailView(generic.DetailView):
-    '''Consider breaking some of this logic into a separate class.'''
+    """Course Detail Page View Controller
+
+    Fulfills Required Components:
+    - <<Screen>> CourseInfo 
+    """
 
     model = Course
     template_name = 'tms/info/course.html'
@@ -261,6 +266,13 @@ class CourseDetailView(generic.DetailView):
 
 
 class CourseSetupView(generic.FormView):
+    """Instructor Course Setup Page View Controller
+
+    Fulfills Required Components:
+    - <<Screen>> CourseSetup
+    - <<Form>> CourseSettings (see forms.py) 
+    """
+
     form_class = CourseSetupForm
     template_name = "tms/coursesetup.html"
     success_url = '/tms/landing'
@@ -373,6 +385,12 @@ class CourseSetupView(generic.FormView):
 
 
 class SectionDetailView(generic.DetailView):
+    """Section Detail Page View Controller
+
+    Fulfills Required Components:
+    - <<Screen>> SectionInfo 
+    """
+
     model = Section
     template_name = 'tms/info/section.html'
     context_object_name = 'section'
@@ -393,12 +411,25 @@ class SectionDetailView(generic.DetailView):
 
 
 class TeamDetailView(generic.DetailView):
+    """Team Detail Page View Controller
+
+    Fulfills Required Components:
+    - <<Screen>> TeamInfo 
+    """
+
     model = Team
     template_name = 'tms/info/team.html'
     context_object_name = 'team'
 
 
 class TeamCreationFormView(generic.FormView):
+    """Student Team Creation Form Page View Controller
+
+    Fulfills Required Components:
+    - <<Screen>> Registration 
+    - <<Form>> RegistrationForm (see forms.py) 
+    """
+
     form_class = TeamCreationForm
     template_name = "tms/teamcreation.html"
     success_url = '/tms/landing'
@@ -488,6 +519,15 @@ class TeamCreationFormView(generic.FormView):
 
 
 class TeamJoinFormView(generic.FormView):
+    """Team Joining Form View Controller
+
+    Displays to the user a form to join one of the teams in a section.
+
+    Fulfills Required Components:
+    - <<Screen>> JoinTeam 
+    - <<Form>> JoinTeamForm (see forms.py) 
+    """
+
     form_class = TeamJoinForm
     template_name = "tms/teamjoin.html"
     success_url = '/tms/landing'
@@ -540,8 +580,17 @@ class TeamJoinFormView(generic.FormView):
 
         return context
 
-# Small method to add a user to a team.
+
 def add_to_team(request, studentid, teamid):
+    """Adds the student (studentid) to team (teamid)
+
+    A form can POST to this address to quickly approve a user.
+    Adds the pending student selected on the TeamDetailView to the team.
+    TODO: Reformat to a FormView
+
+    Fulfills Required Components:
+    - <<Form>> AddMember (embedded in info/team.html) 
+    """
     if request.method == "POST" and request.user.is_authenticated:
 
         team = None
@@ -567,3 +616,28 @@ def add_to_team(request, studentid, teamid):
 
         # Dirty and hardcoded.
         return HttpResponseRedirect('/tms/info/team/{}/'.format(teamid))
+
+
+def influx_logout(request):
+    """A form can POST to this controller to log out.
+    """
+
+    if request.method == "POST" and request.user.is_authenticated:
+        logout(request)
+        return HttpResponseRedirect('/')
+    else:
+        return HttpResponseRedirect(request.path_info)
+
+
+class InfoView(LoginRequiredMixin, generic.ListView):
+    """Informational Page View Controller
+
+    Can be accessed from a link at the bottom of the TMS.
+    Not part of the requirements.
+    Primarily for debugging, this view presents most of the data in the system.
+    """
+    template_name = "tms/info.html"
+    context_object_name = 'institutions'
+
+    def get_queryset(self):
+        return Institution.objects.order_by('name')
