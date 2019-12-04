@@ -10,11 +10,22 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import InfluxUser, Student, Instructor, Institution, Course, Section, Team
 from .forms import RegistrationForm, LoginForm, CourseSetupForm, TeamCreationForm, TeamJoinForm
 
+"""
+views.py
+
+Author: Ryan Fleck <Ryan.Fleck@protonmail.com
+
+This file contains all of the Django Views, which are roughly equivalent
+to MVC Controllers, for the InFlux TMS system. Some of the views extend
+special view classes designed to make the presentation of single/lists of
+objects easier, or present a form (present in forms.py)
+"""
 
 class LandingView(LoginRequiredMixin, generic.TemplateView):
-    """Landing Page View Controller
+    """C7.4-Alt Landing Page View Controller
 
     Fulfills Required Components:
+    - <<Screen>> LandingPage
     - <<Screen>> LandingPage
     """
 
@@ -99,7 +110,7 @@ class LandingView(LoginRequiredMixin, generic.TemplateView):
 
 
 class LoginView(generic.FormView):
-    """Login Page View Controller
+    """C7.2 Login Page View Controller
 
     Fulfills Required Components:
     - <<Screen>> Login
@@ -138,7 +149,7 @@ class LoginView(generic.FormView):
 
 
 class RegistrationView(generic.FormView):
-    """Registration Page View Controller
+    """C7.1 Registration Page View Controller
 
     Fulfills Required Components:
     - <<Screen>> Registration 
@@ -185,7 +196,7 @@ class RegistrationView(generic.FormView):
 
 
 class CourseDetailView(generic.DetailView):
-    """Course Detail Page View Controller
+    """C7.4 Course Detail Page View Controller
 
     Fulfills Required Components:
     - <<Screen>> CourseInfo 
@@ -266,7 +277,7 @@ class CourseDetailView(generic.DetailView):
 
 
 class CourseSetupView(generic.FormView):
-    """Instructor Course Setup Page View Controller
+    """C7.3 Instructor Course Setup Page View Controller
 
     Fulfills Required Components:
     - <<Screen>> CourseSetup
@@ -423,7 +434,7 @@ class TeamDetailView(generic.DetailView):
 
 
 class TeamCreationFormView(generic.FormView):
-    """Student Team Creation Form Page View Controller
+    """C7.7 Student Team Creation Form Page View Controller
 
     Fulfills Required Components:
     - <<Screen>> Registration 
@@ -519,7 +530,7 @@ class TeamCreationFormView(generic.FormView):
 
 
 class TeamJoinFormView(generic.FormView):
-    """Team Joining Form View Controller
+    """C7.8 Team Joining Form View Controller
 
     Displays to the user a form to join one of the teams in a section.
 
@@ -582,7 +593,7 @@ class TeamJoinFormView(generic.FormView):
 
 
 def add_to_team(request, studentid, teamid):
-    """Adds the student (studentid) to team (teamid)
+    """C7.9 Adds the student (studentid) to team (teamid)
 
     A form can POST to this address to quickly approve a user.
     Adds the pending student selected on the TeamDetailView to the team.
@@ -619,7 +630,7 @@ def add_to_team(request, studentid, teamid):
 
 
 def influx_logout(request):
-    """A form can POST to this controller to log out.
+    """C7.5, C7.10 A form can POST to this controller to log out.
     """
 
     if request.method == "POST" and request.user.is_authenticated:

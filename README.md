@@ -7,3 +7,10 @@ A live demo has been [deployed on Heroku here](https://influx-tms.herokuapp.com/
 <br />
 
 ![](/staticfiles/influx.png)
+
+<br />
+
+**Important Files:**
+1. [views.py](https://github.com/RyanFleck/Influx/blob/master/influx_tms/views.py)
+1. [models.py](https://github.com/RyanFleck/Influx/blob/master/influx_tms/models.py)
+1. [forms.py](https://github.com/RyanFleck/Influx/blob/master/influx_tms/forms.py)
